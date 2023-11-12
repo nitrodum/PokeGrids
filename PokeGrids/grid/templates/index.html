@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <!-- Load favicon -->
+  <link
+  rel="shortcut icon"
+  type="image/png"
+  href="{% static 'img/favicon.ico' %}"
+  />
+
+  <!-- Include your CSS files here -->
+  <link
+  rel="preload"
+  as="style"
+  href="{% static 'css/style.css' %}"
+  onload="this.rel = 'stylesheet'"
+  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PokeGrids</title>
+
+</head>
+<body>
+  <header>
+    <div class="container">
+        <h1>PokeGrid</h1>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Twitter</a></li>
+                <li><a href="#">Help</a></li>
+                <!-- Add more links as needed -->
+            </ul>
+        </nav>
+    </div>
+</header>
+<main>
+  <div class="app">
+  <div class="top">
+    <div class="col-characteristic">Rock</div>
+    <div class="col-characteristic">Rock</div>
+    <div class="col-characteristic">Flying</div>
+    <div class="col-characteristic">Gen 1</div>
+  </div>
+  <div class="container">
+    <div class="characteristics">
+      <!-- Placeable pictures or words for characteristics -->
+      <div class="row-characteristic">Fire</div>
+      <div class="row-characteristic">Water</div>
+      <div class="row-characteristic">Electric</div>
+    </div>
+    <div class="grid-container" id="grid-container">
+      <!-- 3x3 grid -->
+      <div class="grid-item" onclick="handleClick(this)"></div>
+      <div class="grid-item" onclick="handleClick(this)"></div>
+      <div class="grid-item" onclick="handleClick(this)"></div>
+      <div class="grid-item" onclick="handleClick(this)"></div>
+      <div class="grid-item" onclick="handleClick(this)"></div>
+      <div class="grid-item" onclick="handleClick(this)"></div>
+      <div class="grid-item" onclick="handleClick(this)"></div>
+      <div class="grid-item" onclick="handleClick(this)"></div>
+      <div class="grid-item" onclick="handleClick(this)"></div>
+    </div>
+  </div>
+</div>
+</main>
+  <footer>
+    <!-- Your footer content goes here -->
+  </footer>
+  <script>
+  </script>
+</body>
+</html>

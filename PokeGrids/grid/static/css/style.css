@@ -1,0 +1,91 @@
+
+
+body {
+    background-color: #f0f0f0;
+
+}
+
+header {
+    width: 100%;
+    background-color: #333; /* Dark gray background color for the header */
+    color: #fff;
+    padding: 0 35px;
+    box-sizing: border-box;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li {
+    display: inline;
+}
+
+nav a {
+    text-decoration: none;
+    color: #ecf0f1;
+    font-weight: bold;
+    font-size: 16px;
+    transition: color 0.3s;
+}
+
+nav a:hover {
+    color: #555; /* Hover color for the nav links */
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-item {
+    width: 9rem;
+    height:  9rem;
+    background-color: #ddd; /* Light gray background color for the grid items */
+    border: 1px solid #aaa; /* Add a border to make the empty grid items visible */
+    border-radius: 5px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.grid-item:hover {
+    background-color: #aaa; /* Hover color for the grid items */
+}
+
+.top {
+    display: flex;
+    flex-direction: row; /* Display items horizontally */
+}
+
+.col-characteristic, .row-characteristic {
+    width: 9rem;
+    height: 9rem;
+    background-color: #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #aaa; /* Add a border to make the empty grid items visible */
+    box-sizing: border-box;
+}
+
+.app{
+    display: grid;
+    flex-direction: column;
+    place-items: center;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
