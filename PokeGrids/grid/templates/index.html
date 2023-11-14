@@ -35,9 +35,13 @@
         <!-- Search Modal -->
         <div class="modal" id="search-modal">
             <div class="modal-content">
-                <input placeholder="Search pokemon..." autocomplete="off" autocorrect="off" spellcheck="false"
-                    type="search">
-                <span class="close" onclick="closeSearchModal()">&times;</span>
+                <div>
+                    <input placeholder="Search pokemon..." autocomplete="off" autocorrect="off" spellcheck="false" type="search" id="search-input">
+                    <div id="pokemon-list" style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; display: none;">
+                        <!-- Dropdown list for Pokemon names -->
+                    </div>
+                    <span class="close" onclick="closeSearchModal()">&times;</span>
+                </div>
             </div>
         </div>
 
