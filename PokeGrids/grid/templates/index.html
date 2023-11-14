@@ -1,75 +1,126 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-  <!-- Load favicon -->
-  <link
-  rel="shortcut icon"
-  type="image/png"
-  href="{% static 'img/favicon.ico' %}"
-  />
+    <!-- Load favicon -->
+    <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico' %}" />
 
-  <!-- Include your CSS files here -->
-  <link
-  rel="preload"
-  as="style"
-  href="{% static 'css/style.css' %}"
-  onload="this.rel = 'stylesheet'"
-  />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PokeGrids</title>
-
+    <!-- Include your CSS files here -->
+    <link rel="preload" as="style" href="{% static 'css/style.css' %}" onload="this.rel = 'stylesheet'" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeGrids</title>
 </head>
+
 <body>
-  <header>
-    <div class="container">
-        <h1>PokeGrid</h1>
-        <nav>
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Twitter</a></li>
-                <li><a href="#">Help</a></li>
-                <!-- Add more links as needed -->
-            </ul>
-        </nav>
-    </div>
-</header>
-<main>
-  <div class="app">
-  <div class="top">
-    <div class="col-characteristic">Rock</div>
-    <div class="col-characteristic">Rock</div>
-    <div class="col-characteristic">Flying</div>
-    <div class="col-characteristic">Gen 1</div>
-  </div>
-  <div class="container">
-    <div class="characteristics">
-      <!-- Placeable pictures or words for characteristics -->
-      <div class="row-characteristic">Fire</div>
-      <div class="row-characteristic">Water</div>
-      <div class="row-characteristic">Electric</div>
-    </div>
-    <div class="grid-container" id="grid-container">
-      <!-- 3x3 grid -->
-      <div class="grid-item" onclick="handleClick(this)"></div>
-      <div class="grid-item" onclick="handleClick(this)"></div>
-      <div class="grid-item" onclick="handleClick(this)"></div>
-      <div class="grid-item" onclick="handleClick(this)"></div>
-      <div class="grid-item" onclick="handleClick(this)"></div>
-      <div class="grid-item" onclick="handleClick(this)"></div>
-      <div class="grid-item" onclick="handleClick(this)"></div>
-      <div class="grid-item" onclick="handleClick(this)"></div>
-      <div class="grid-item" onclick="handleClick(this)"></div>
-    </div>
-  </div>
-</div>
-</main>
-  <footer>
-    <!-- Your footer content goes here -->
-  </footer>
-  <script>
-  </script>
+    <header>
+        <div class="container">
+            <!-- Title -->
+            <h1>PokeGrid</h1>
+            <nav>
+            <!-- Nav Bar -->
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Twitter</a></li>
+                    <li><a href="#">Help</a></li>
+                    <!-- Add more links as needed -->
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Search Modal -->
+        <div class="modal" id="search-modal">
+            <div class="modal-content">
+                <input placeholder="Search pokemon..." autocomplete="off" autocorrect="off" spellcheck="false"
+                    type="search">
+                <span class="close" onclick="closeSearchModal()">&times;</span>
+            </div>
+        </div>
+
+        <div class="app">
+            <div class="top">
+                <div class="col-characteristic" ></div>
+                <!-- Placeable pictures or words for characteristics -->
+                {% for item in grid_data|slice:":3" %}
+                    {% if item.selected == 1 %}
+                        <div class="col-characteristic" id="col{{forloop.counter}}">{{item.type}}</div>
+                    {% elif item.selected == 2 %}
+                        <div class="col-characteristic" id="col{{forloop.counter}}">Gen {{item.generation}}</div>
+                    {% elif item.selected == 3 %}
+                        <div class="col-characteristic" id="col{{forloop.counter}}">Stage {{item.evolution_stage}}</div>
+                    {% elif item.selected == 4 %}
+                        <div class="col-characteristic" id="col{{forloop.counter}}">Legendary</div>    
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="container">
+                <div class="characteristics">
+                <!-- Placeable pictures or words for characteristics -->
+                {% for item in grid_data|slice:"3:" %}
+                    {% if item.selected == 1 %}
+                        <div class="col-characteristic" id="row{{forloop.counter}}">{{item.type}}</div>
+                    {% elif item.selected == 2 %}
+                        <div class="col-characteristic" id="row{{forloop.counter}}">Gen {{item.generation}}</div>
+                    {% elif item.selected == 3 %}
+                        <div class="col-characteristic" id="row{{forloop.counter}}">Stage {{item.evolution_stage}}</div>
+                    {% elif item.selected == 4 %}
+                        <div class="col-characteristic" id="row{{forloop.counter}}">Legendary</div>    
+                    {% endif %}
+                {% endfor %}
+                </div>
+                <div class="grid-container" id="grid-container">
+                    <!-- 3x3 grid -->
+                    <div class="grid-item" onclick="handleClick(this, event)"></div>
+                    <div class="grid-item" onclick="handleClick(this, event)"></div>
+                    <div class="grid-item" onclick="handleClick(this, event)"></div>
+                    <div class="grid-item" onclick="handleClick(this, event)"></div>
+                    <div class="grid-item" onclick="handleClick(this, event)"></div>
+                    <div class="grid-item" onclick="handleClick(this, event)"></div>
+                    <div class="grid-item" onclick="handleClick(this, event)"></div>
+                    <div class="grid-item" onclick="handleClick(this, event)"></div>
+                    <div class="grid-item" onclick="handleClick(this, event)"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+    </footer>
+
+    <script>
+        // Function to open the search modal
+        function handleClick(gridItem, event) {
+
+            // Show the search modal
+            document.getElementById('search-modal').style.display = 'block';
+
+            // Select the input and reset its value
+            var input = document.querySelector('#search-modal input');
+            input.select();
+            input.value = '';
+
+            // Prevent event propagation
+            event.stopPropagation();
+        }
+
+        // Function to close the search modal
+        function closeSearchModal() {
+            var modal = document.getElementById('search-modal');
+            modal.style.display = 'none';
+        }
+
+        // Function to detect if clicking outside of the search modal
+        window.onclick = function(event) {
+          var modal = document.getElementById('search-modal');
+          if (event.target == modal) {
+            closeSearchModal();
+          }
+        }
+    </script>
 </body>
+
 </html>
