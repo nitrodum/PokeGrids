@@ -6,9 +6,9 @@ class Command(BaseCommand):
     help = "Import Pokemon data from CSV file"
     
     def handle(self, *args, **options):
-        file_path = r'C:\Users\nitro\OneDrive\Documents\Projects\pokedex.csv'        
+        file_path = 'C:\\Users\\nitro\\OneDrive\\Documents\\Projects\\pokedex.csv'        
         with open(file_path, 'r', encoding='utf-8') as file:
-            reader = csv.DictReader(file)
+            reader = csv.DictReader(file_path)
             for row in reader:
                 Pokemon.objects.create(
                     name=row['name'],

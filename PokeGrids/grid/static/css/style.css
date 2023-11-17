@@ -127,3 +127,19 @@ nav a:hover {
     font-size: 20px;
     cursor: pointer;
 }
+
+/* Add this style for the "Select" button */
+#pokemon-list button {
+    display: block; /* Make the button a block-level element */
+    margin-left: auto; /* Move the button to the rightmost side */
+}
+
+/* Update the style for the dropdown container */
+#pokemon-list {
+    max-height: 175px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: none;
+    padding: 10px; /* Add padding for better aesthetics */
+}

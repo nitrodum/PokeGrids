@@ -37,7 +37,7 @@
             <div class="modal-content">
                 <div>
                     <input placeholder="Search pokemon..." autocomplete="off" autocorrect="off" spellcheck="false" type="search" id="search-input">
-                    <div id="pokemon-list" style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; display: none;">
+                    <div id="pokemon-list" style="max-height: 175px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; display: none;">
                         <!-- Dropdown list for Pokemon names -->
                     </div>
                     <span class="close" onclick="closeSearchModal()">&times;</span>
@@ -51,13 +51,13 @@
                 <!-- Placeable pictures or words for characteristics -->
                 {% for item in grid_data|slice:":3" %}
                     {% if item.selected == 1 %}
-                        <div class="col-characteristic" id="col{{forloop.counter}}">{{item.type}}</div>
+                        <div class="col-characteristic selector1" id="trait-col{{forloop.counter}}">{{item.type}}</div>
                     {% elif item.selected == 2 %}
-                        <div class="col-characteristic" id="col{{forloop.counter}}">Gen {{item.generation}}</div>
+                        <div class="col-characteristic selector2" id="trait-col{{forloop.counter}}">Gen {{item.generation}}</div>
                     {% elif item.selected == 3 %}
-                        <div class="col-characteristic" id="col{{forloop.counter}}">Stage {{item.evolution_stage}}</div>
+                        <div class="col-characteristic selector3" id="trait-col{{forloop.counter}}">Stage {{item.evolution_stage}}</div>
                     {% elif item.selected == 4 %}
-                        <div class="col-characteristic" id="col{{forloop.counter}}">Legendary</div>    
+                        <div class="col-characteristic selector4" id="trait-col{{forloop.counter}}">Legendary</div>    
                     {% endif %}
                 {% endfor %}
             </div>
@@ -66,27 +66,27 @@
                 <!-- Placeable pictures or words for characteristics -->
                 {% for item in grid_data|slice:"3:" %}
                     {% if item.selected == 1 %}
-                        <div class="col-characteristic" id="row{{forloop.counter}}">{{item.type}}</div>
+                        <div class="row-characteristic selector1" id="trait-row{{forloop.counter}}">{{item.type}}</div>
                     {% elif item.selected == 2 %}
-                        <div class="col-characteristic" id="row{{forloop.counter}}">Gen {{item.generation}}</div>
+                        <div class="row-characteristic selector2" id="trait-row{{forloop.counter}}">Gen {{item.generation}}</div>
                     {% elif item.selected == 3 %}
-                        <div class="col-characteristic" id="row{{forloop.counter}}">Stage {{item.evolution_stage}}</div>
+                        <div class="row-characteristic selector3" id="trait-row{{forloop.counter}}">Stage {{item.evolution_stage}}</div>
                     {% elif item.selected == 4 %}
-                        <div class="col-characteristic" id="row{{forloop.counter}}">Legendary</div>    
+                        <div class="row-characteristic selector4" id="trait-row{{forloop.counter}}">Legendary</div>    
                     {% endif %}
                 {% endfor %}
                 </div>
                 <div class="grid-container" id="grid-container">
                     <!-- 3x3 grid -->
-                    <div class="grid-item" onclick="handleClick(this, event)"></div>
-                    <div class="grid-item" onclick="handleClick(this, event)"></div>
-                    <div class="grid-item" onclick="handleClick(this, event)"></div>
-                    <div class="grid-item" onclick="handleClick(this, event)"></div>
-                    <div class="grid-item" onclick="handleClick(this, event)"></div>
-                    <div class="grid-item" onclick="handleClick(this, event)"></div>
-                    <div class="grid-item" onclick="handleClick(this, event)"></div>
-                    <div class="grid-item" onclick="handleClick(this, event)"></div>
-                    <div class="grid-item" onclick="handleClick(this, event)"></div>
+                    <div class="grid-item row1 col1" onclick="handleClick(this, event)"></div>
+                    <div class="grid-item row1 col2" onclick="handleClick(this, event)"></div>
+                    <div class="grid-item row1 col3" onclick="handleClick(this, event)"></div>
+                    <div class="grid-item row2 col1" onclick="handleClick(this, event)"></div>
+                    <div class="grid-item row2 col2" onclick="handleClick(this, event)"></div>
+                    <div class="grid-item row2 col3" onclick="handleClick(this, event)"></div>
+                    <div class="grid-item row3 col1" onclick="handleClick(this, event)"></div>
+                    <div class="grid-item row3 col2" onclick="handleClick(this, event)"></div>
+                    <div class="grid-item row3 col3" onclick="handleClick(this, event)"></div>
                 </div>
             </div>
         </div>
@@ -96,8 +96,25 @@
     </footer>
 
     <script>
+        // Define a debounce function
+        function debounce(func, delay) {
+            let timeoutId;
+            return function () {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(func, delay);
+            };
+        }
+
         // Function to open the search modal
-        function handleClick(gridItem, event) {
+        function handleClick(gridItem) {
+            // Remove the 'selected' class from any previously selected grid item
+            var selectedGridItem = document.querySelector('.grid-item.selected');
+            if (selectedGridItem) {
+                selectedGridItem.classList.remove('selected');
+            }
+
+            // Add the 'selected' class to the current grid item
+            gridItem.classList.add('selected');
 
             // Show the search modal
             document.getElementById('search-modal').style.display = 'block';
@@ -107,24 +124,136 @@
             input.select();
             input.value = '';
 
-            // Prevent event propagation
-            event.stopPropagation();
+            // Add debounced event listener for input changes
+            input.addEventListener('input', debounce(fetchPokemonNames, 300));
         }
 
         // Function to close the search modal
         function closeSearchModal() {
             var modal = document.getElementById('search-modal');
+            var pokemonList = document.getElementById('pokemon-list');
+            
+            // Clear the dropdown and hide it
+            pokemonList.innerHTML = '';
+            pokemonList.style.display = 'none';
+
+            // Remove input event listener
+            var input = document.querySelector('#search-modal input');
+            input.removeEventListener('input', fetchPokemonNames);
+
+            // Hide the modal
             modal.style.display = 'none';
         }
 
-        // Function to detect if clicking outside of the search modal
-        window.onclick = function(event) {
-          var modal = document.getElementById('search-modal');
-          if (event.target == modal) {
-            closeSearchModal();
-          }
+        // Function to fetch Pokemon names and populate the dropdown
+        function fetchPokemonNames() {
+            var pokemonList = document.getElementById('pokemon-list');
+            var searchInput = document.getElementById('search-input').value;
+
+            // Create a URLSearchParams object to include the search parameter
+            var params = new URLSearchParams();
+            params.set('search', searchInput);
+
+            // Fetch Pokemon names from your Django backend (use your appropriate API endpoint)
+            fetch('/api/pokemon/?' + params)
+                .then(response => response.json())
+                .then(data => {
+                    // Clear existing dropdown items
+                    pokemonList.innerHTML = '';
+
+                    // Populate the dropdown with Pokemon names and Select buttons
+                    data.results.forEach(pokemon => {
+                        var option = document.createElement('div');
+                        option.style.display = 'flex';
+                        option.style.alignItems = 'center';
+
+                        var nameSpan = document.createElement('span');
+                        nameSpan.textContent = pokemon.name;
+
+                        var selectButton = document.createElement('button');
+                        selectButton.textContent = 'Select';
+
+                        // Set up an event listener to handle click on the "Select" button
+                        selectButton.addEventListener('click', function () {
+                            handleSelect(pokemon);
+                        });
+
+                        // Append the name and "Select" button to the dropdown
+                        option.appendChild(nameSpan);
+                        option.appendChild(selectButton);
+
+                        // Append the option to the dropdown
+                        pokemonList.appendChild(option);
+                    });
+
+            // Show the dropdown
+            pokemonList.style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Error fetching Pokemon names:', error);
+        });
         }
+
+    
+        // Handle clicks outside the modal to close it
+        window.onclick = function(event) {
+            var modal = document.getElementById('search-modal');
+            if (event.target == modal) {
+                closeSearchModal();
+            }
+        };
+
+        // Check trait of pokemon to selected trait
+        function checkTrait(pokemon, trait, traitText, selector) {
+            switch (`${selector}`) {
+                case 'selector1':
+                    return pokemon.type1 == trait.textContent || pokemon.type2 == trait.textContent;
+                case 'selector2':
+                    var traitGeneration = parseInt(traitText.match(/\d+/)[0], 10);
+                    return pokemon.generation == traitGeneration;
+                case 'selector3':
+                    var traitStage = parseInt(traitText.match(/\d+/)[0], 10);
+                    return pokemon.evolution_stage == traitStage;
+                case 'selector4':
+                    return pokemon.lengendary != "Normal";
+                default:
+                    return false;
+            }
+        }
+
+        function handleSelect(pokemon) {
+            var selectedGridItem = document.querySelector('.grid-item.selected');
+            
+            if (selectedGridItem) {
+                // Get the row and col classes from the selectedGridItem
+                var rowClass = [...selectedGridItem.classList].find(className => className.startsWith('row'));
+                var colClass = [...selectedGridItem.classList].find(className => className.startsWith('col'));
+
+                 // Get the corresponding row and col traits
+                var rowTrait = document.querySelector(`#${rowClass.replace('row', 'trait-row')}`);
+                var colTrait = document.querySelector(`#${colClass.replace('col', 'trait-col')}`);
+
+                var rowTraitText = rowTrait.textContent
+                var colTraitText = colTrait.textContent
+
+                // Check the class selectors of rowTrait and colTrait
+                var rowSelector = [...rowTrait.classList].find(className => className.startsWith('selector'));
+                var colSelector = [...colTrait.classList].find(className => className.startsWith('selector'));
+
+                var rowCheck = checkTrait(pokemon, rowTrait, rowTraitText, rowSelector);
+                var colCheck = checkTrait(pokemon, colTrait, colTraitText, colSelector);
+
+                if (rowCheck && colCheck) {
+                    selectedGridItem.textContent = pokemon.name;
+                }
+            }
+
+            closeSearchModal();
+        }
+
+    
     </script>
+    
 </body>
 
 </html>
