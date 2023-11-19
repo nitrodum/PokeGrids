@@ -96,6 +96,9 @@
     </footer>
 
     <script>
+        
+        var selectedPokemon = [];
+
         // Define a debounce function
         function debounce(func, delay) {
             let timeoutId;
@@ -139,7 +142,7 @@
 
             // Remove input event listener
             var input = document.querySelector('#search-modal input');
-            input.removeEventListener('input', fetchPokemonNames);
+            input.removeEventListener('input', debounce(fetchPokemonNames, 300));
 
             // Hide the modal
             modal.style.display = 'none';
@@ -147,6 +150,14 @@
 
         // Function to fetch Pokemon names and populate the dropdown
         function fetchPokemonNames() {
+            // Cancel any existing fetch request
+            if (window.abortController) {
+                window.abortController.abort();
+            }
+
+            // Create a new AbortController
+            window.abortController = new AbortController();
+
             var pokemonList = document.getElementById('pokemon-list');
             var searchInput = document.getElementById('search-input').value;
 
@@ -154,8 +165,8 @@
             var params = new URLSearchParams();
             params.set('search', searchInput);
 
-            // Fetch Pokemon names from your Django backend (use your appropriate API endpoint)
-            fetch('/api/pokemon/?' + params)
+            // Fetch Pokemon names from Django backend
+            fetch('/api/pokemon/?' + params, { signal: window.abortController.signal })
                 .then(response => response.json())
                 .then(data => {
                     // Clear existing dropdown items
@@ -163,36 +174,41 @@
 
                     // Populate the dropdown with Pokemon names and Select buttons
                     data.results.forEach(pokemon => {
-                        var option = document.createElement('div');
-                        option.style.display = 'flex';
-                        option.style.alignItems = 'center';
+                        if (!selectedPokemon.includes(pokemon.name)) {
+                            var option = document.createElement('div');
+                            option.style.display = 'flex';
+                            option.style.alignItems = 'center';
 
-                        var nameSpan = document.createElement('span');
-                        nameSpan.textContent = pokemon.name;
+                            var nameSpan = document.createElement('span');
+                            nameSpan.textContent = pokemon.name;
 
-                        var selectButton = document.createElement('button');
-                        selectButton.textContent = 'Select';
+                            var selectButton = document.createElement('button');
+                            selectButton.textContent = 'Select';
 
-                        // Set up an event listener to handle click on the "Select" button
-                        selectButton.addEventListener('click', function () {
-                            handleSelect(pokemon);
-                        });
+                            // Set up an event listener to handle click on the "Select" button
+                            selectButton.addEventListener('click', function () {
+                                handleSelect(pokemon);
+                            });
 
-                        // Append the name and "Select" button to the dropdown
-                        option.appendChild(nameSpan);
-                        option.appendChild(selectButton);
+                            // Append the name and "Select" button to the dropdown
+                            option.appendChild(nameSpan);
+                            option.appendChild(selectButton);
 
-                        // Append the option to the dropdown
-                        pokemonList.appendChild(option);
+                            // Append the option to the dropdown
+                            pokemonList.appendChild(option);
+                        }
                     });
 
-            // Show the dropdown
-            pokemonList.style.display = 'block';
-        })
-        .catch(error => {
-            console.error('Error fetching Pokemon names:', error);
-        });
+                    // Show the dropdown
+                    pokemonList.style.display = 'block';
+                })
+                .catch(error => {
+                    if (error.name !== 'AbortError') {
+                        console.error('Error fetching Pokemon names:', error);
+                    }
+                });
         }
+
 
     
         // Handle clicks outside the modal to close it
@@ -225,16 +241,29 @@
             var selectedGridItem = document.querySelector('.grid-item.selected');
             
             if (selectedGridItem) {
+
+                // Check if a Pokemon is already selected for this grid
+                if (selectedPokemon.includes(pokemon.name)) {
+                    alert("Pokemon already selected for this grid!");
+                    return;
+                }
+
                 // Get the row and col classes from the selectedGridItem
                 var rowClass = [...selectedGridItem.classList].find(className => className.startsWith('row'));
                 var colClass = [...selectedGridItem.classList].find(className => className.startsWith('col'));
 
-                 // Get the corresponding row and col traits
+                // Get the corresponding row and col traits
                 var rowTrait = document.querySelector(`#${rowClass.replace('row', 'trait-row')}`);
                 var colTrait = document.querySelector(`#${colClass.replace('col', 'trait-col')}`);
 
                 var rowTraitText = rowTrait.textContent
                 var colTraitText = colTrait.textContent
+
+                 // Get the row and col values without the prefixes
+                var rowValue = parseInt(rowClass.replace("row", ""), 10);
+                var colValue = parseInt(colClass.replace("col", ""), 10);
+
+                console.log(rowValue);
 
                 // Check the class selectors of rowTrait and colTrait
                 var rowSelector = [...rowTrait.classList].find(className => className.startsWith('selector'));
@@ -244,13 +273,186 @@
                 var colCheck = checkTrait(pokemon, colTrait, colTraitText, colSelector);
 
                 if (rowCheck && colCheck) {
-                    selectedGridItem.textContent = pokemon.name;
+                    if (selectedGridItem.textContent) {
+                        // Remove the corresponding Pokémon name from the selectedPokemon array
+                        var previousPokemonName = selectedGridItem.textContent;
+                        var indexToRemove = selectedPokemon.indexOf(previousPokemonName);
+                        
+                        if (indexToRemove !== -1) {
+                            selectedPokemon.splice(indexToRemove, 1);
+                        }
+                    }
+
+                    // Update the selected Pokemon and prevent it from being selected again
+                    selectedPokemon.push(pokemon.name);
+
+                    // Calculate the percentage for the selected Pokemon in this grid
+                    var date = getFormattedDate();
+                    var gridIndex = getGridIndex(rowValue, colValue)
+                    getTotalSubmissionsInGrid(date)
+                    .then(totalSubmissions => {
+                        return getPokemonStatisticCount(gridIndex, pokemon.name, date)
+                            .then(selectedPokemonCount => {
+
+                                var percentage = (selectedPokemonCount / totalSubmissions) * 100;
+                                console.log('total submissions: ' + totalSubmissions);
+                                console.log('selectedPokemonCount: ' + selectedPokemonCount);
+                                console.log(percentage);
+
+                                // Update the grid item with the Pokemon name and percentage
+                                var percentageElement = document.createElement('div');
+                                percentageElement.className = 'percentage';
+                                percentageElement.textContent = `${percentage.toFixed(2)}%`;
+
+                                var pokemonNameElement = document.createElement('div');
+                                pokemonNameElement.className = 'pokemon-name';
+                                pokemonNameElement.textContent = pokemon.name;
+
+                                // Clear existing content and append the new elements
+                                selectedGridItem.innerHTML = '';
+                                selectedGridItem.appendChild(percentageElement);
+                                selectedGridItem.appendChild(pokemonNameElement);
+
+                            });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Handle the error as needed
+                    });
+
+                    
+                    
+
+                    //Check to see if the grid is completed and send a submission if full
+                    if (selectedPokemon.length === 9) {
+                        submitGrid();
+                        closeSearchModal();
+                    }
                 }
             }
 
             closeSearchModal();
         }
 
+        function getGridIndex(row, col) {
+            return (row - 1) * 3 + (col - 1)
+        }
+
+        function getTotalSubmissionsInGrid(date) {
+            return fetch(`/api/submission-count/${date}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if ('count' in data) {
+                        if (data.count !== 0){
+                            return data.count/8;
+                        } else {
+                            return 1;
+                        }
+                    } else {
+                        throw new Error('Failed to get submission count');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching submission count:', error);
+                    return 0; // Return a default value or handle the error as needed
+                });
+        }
+
+        function getPokemonStatisticCount(grid, pokemonName, date) {
+            return fetch(`/api/pokemon-statistic-count/${grid}/${pokemonName}/${date}/`)
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else if (response.status === 500) {
+                        // PokemonStatistic not found, return 0
+                        return { count: 0 };
+                    } else {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                })
+                .then(data => {
+                    if ('count' in data) {
+                        return data.count;
+                    } else {
+                        throw new Error('Failed to get submission count for the PokemonStatistic');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching submission count for the PokemonStatistic:', error);
+                    return 0; // Return a default value or handle the error as needed
+                });
+        }
+
+        // Function to handle the submission process
+        function submitGrid() {
+            alert("Submitting the grid!");
+            var gridIndex = 0;
+            for (let row = 1; row <= 3; row++) {
+                for (let col = 1; col <= 3; col++) {
+                    // Get the selected Pokemon name from the grid item
+                    sendPayload(gridIndex, row, col);
+                    gridIndex++;
+                }
+            }
+        }
+
+        function sendPayload(gridIndex, row, col) {
+            const gridItem = document.querySelector(`.grid-item.row${row}.col${col}`);
+            const pokemonName = gridItem.querySelector('.pokemon-name').textContent; 
+            if (pokemonName) {
+                // Create the payload for the POST request
+                var formattedDate = getFormattedDate();
+                const payload = {
+                    grid: gridIndex,
+                    date: formattedDate, // Add the current date or adjust as needed
+                    pokemon: pokemonName, // Assuming 'name' is the identifier for the Pokemon
+                };
+                console.log(payload)
+                // Send a POST request to the API endpoint
+                fetch('/api/submission/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'), // Include CSRF token
+                    },
+                    body: JSON.stringify(payload),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Submission successful:', data);
+                })
+                .catch(error => {
+                    console.error('Error submitting grid:', error);
+                    // Handle the error as needed
+                });
+            }
+        }
+
+        function getFormattedDate() {
+            const currentDate = new Date();
+            return `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
+        }
+
+        // Function to get CSRF token from cookie
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
     
     </script>
     
