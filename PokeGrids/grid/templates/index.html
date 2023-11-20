@@ -10,6 +10,7 @@
 
     <!-- Include your CSS files here -->
     <link rel="preload" as="style" href="{% static 'css/style.css' %}" onload="this.rel = 'stylesheet'" />
+    <link rel="stylesheet" href="https://justingolden.me/pokemon-types-css/types.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PokeGrids</title>
 </head>
@@ -50,7 +51,9 @@
                 <!-- Placeable pictures or words for characteristics -->
                 {% for item in grid_data|slice:":3" %}
                     {% if item.selected == 1 %}
-                        <div class="col-characteristic selector1" id="trait-col{{forloop.counter}}">{{item.type}}</div>
+                        <div class="col-characteristic selector1" id="trait-col{{forloop.counter}}">
+                            <span class="type {{item.type}}" style="border-radius: 4px;"></span>
+                        </div>
                     {% elif item.selected == 2 %}
                         <div class="col-characteristic selector2" id="trait-col{{forloop.counter}}">Gen {{item.generation}}</div>
                     {% elif item.selected == 3 %}
@@ -65,7 +68,9 @@
                 <!-- Placeable pictures or words for characteristics -->
                 {% for item in grid_data|slice:"3:" %}
                     {% if item.selected == 1 %}
-                        <div class="row-characteristic selector1" id="trait-row{{forloop.counter}}">{{item.type}}</div>
+                        <div class="row-characteristic selector1" id="trait-row{{forloop.counter}}">
+                            <span class="type {{item.type}}" style="border-radius: 4px;"></span>
+                        </div>
                     {% elif item.selected == 2 %}
                         <div class="row-characteristic selector2" id="trait-row{{forloop.counter}}">Gen {{item.generation}}</div>
                     {% elif item.selected == 3 %}
@@ -181,8 +186,6 @@
                             var pokemonImage = document.createElement('img');
                             pokemonImage.className = 'pokemon-dropdown-image';
 
-                             
-
                             // Check if the image with the specified Pokédex number exists
                             doesImageExist(pokemon.pokedex_number, function (exists) {
                                 // Update the image source based on whether it exists or not
@@ -246,20 +249,20 @@
         function checkTrait(pokemon, trait, traitText, selector) {
             switch (`${selector}`) {
                 case 'selector1':
-                    return pokemon.type1 == trait.textContent || pokemon.type2 == trait.textContent;
+                    var typeSpan = trait.querySelector('.type');
+                    return typeSpan && (typeSpan.classList.contains(pokemon.type1.toLowerCase()) || typeSpan.classList.contains(pokemon.type2.toLowerCase()));
                 case 'selector2':
                     var traitGeneration = parseInt(traitText.match(/\d+/)[0], 10);
-                    return pokemon.generation == traitGeneration;
+                    return pokemon.generation === traitGeneration;
                 case 'selector3':
                     var traitStage = parseInt(traitText.match(/\d+/)[0], 10);
-                    return pokemon.evolution_stage == traitStage;
+                    return pokemon.evolution_stage === traitStage;
                 case 'selector4':
-                    return pokemon.lengendary != "Normal";
+                    return pokemon.legendary !== "Normal";
                 default:
                     return false;
             }
         }
-
         function handleSelect(pokemon) {
             var selectedGridItem = document.querySelector('.grid-item.selected');
             
@@ -329,7 +332,12 @@
 
                                 var pokemonImageElement = document.createElement('img');
                                 pokemonImageElement.className = 'pokemon-image'; 
-                                pokemonImageElement.src = `{% static 'img/pokemon//main-sprites/' %}${pokemon.pokedex_number}.png`;
+                                doesImageExist(pokemon.pokedex_number, function (exists) {
+                                    // Update the image source based on whether it exists or not
+                                    pokemonImageElement.src = exists
+                                        ? `{% static 'img/pokemon/main-sprites/' %}${pokemon.pokedex_number}.png`
+                                        : '{% static 'img/pokemon/main-sprites/0.png' %}';
+                                });
 
                                 var pokemonNameElement = document.createElement('div');
                                 pokemonNameElement.className = 'pokemon-name';
