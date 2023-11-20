@@ -3,6 +3,7 @@
 body {
     background-color: #f0f0f0;
     margin: 0;
+    font-family: sans-serif;
 }
 
 header {
@@ -47,8 +48,8 @@ nav a:hover {
 }
 
 .grid-item {
-    width: 9rem;
-    height:  9rem;
+    width: 12rem;
+    height:  12rem;
     background-color: #ddd; /* Light gray background color for the grid items */
     border: 1px solid #aaa; /* Add a border to make the empty grid items visible */
     border-radius: 5px;
@@ -71,8 +72,8 @@ nav a:hover {
 }
 
 .col-characteristic, .row-characteristic {
-    width: 9rem;
-    height: 9rem;
+    width: 12rem;
+    height: 12rem;
     background-color: #ddd;
     border-radius: 5px;
     cursor: pointer;
@@ -89,6 +90,7 @@ nav a:hover {
     place-items: center;
     padding-top: 3rem;
     padding-bottom: 3rem;
+    font-size: 24px;
 }
 
 .modal {
@@ -165,7 +167,7 @@ nav a:hover {
     top: 10px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 14px;
+    font-size: 18px;
     color: rgb(24, 108, 163);
 }
 
@@ -174,8 +176,8 @@ nav a:hover {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 80px;
-    height: 80px;
+    width: 144px;
+    height: 144px;
 }
 
 .pokemon-name {
@@ -183,6 +185,5 @@ nav a:hover {
     top: 90%; /* Adjust the top position to your preference */
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 16px;
     color: #000;
 }

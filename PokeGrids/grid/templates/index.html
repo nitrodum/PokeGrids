@@ -40,7 +40,6 @@
                     <div id="pokemon-list" style="max-height: 175px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; display: none;">
                         <!-- Dropdown list for Pokemon names -->
                     </div>
-                    <span class="close" onclick="closeSearchModal()">&times;</span>
                 </div>
             </div>
         </div>
@@ -305,6 +304,7 @@
                                 percentageElement.textContent = `${percentage.toFixed(2)}%`;
 
                                 var pokemonImageElement = document.createElement('img');
+                                pokemonImageElement.className = 'pokemon-image'; 
                                 pokemonImageElement.src = `{% static 'img/pokemon//main-sprites/' %}${pokemon.pokedex_number}.png`;
 
                                 var pokemonNameElement = document.createElement('div');
