@@ -178,6 +178,10 @@
                             option.style.display = 'flex';
                             option.style.alignItems = 'center';
 
+                            var pokemonImage = document.createElement('img');
+                            pokemonImage.src = `{% static 'img/pokemon/main-sprites/' %}${pokemon.pokedex_number}.png`;
+                            pokemonImage.className = 'pokemon-dropdown-image'; // Add a class for styling
+
                             var nameSpan = document.createElement('span');
                             nameSpan.textContent = pokemon.name;
 
@@ -189,7 +193,8 @@
                                 handleSelect(pokemon);
                             });
 
-                            // Append the name and "Select" button to the dropdown
+                            // Append the image, name, and "Select" button to the dropdown
+                            option.appendChild(pokemonImage);
                             option.appendChild(nameSpan);
                             option.appendChild(selectButton);
 
