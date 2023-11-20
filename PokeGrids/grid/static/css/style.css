@@ -162,19 +162,27 @@ nav a:hover {
 
 .percentage {
     position: absolute;
-    top: 10px; /* Adjust the top position to your preference */
+    top: 10px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 14px; /* Adjust the font size to your preference */
-    color: #fff; /* Color for the percentage */
+    font-size: 14px;
+    color: rgb(24, 108, 163);
 }
 
-.pokemon-name {
+.pokemon-image {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 16px; /* Adjust the font size to your preference */
-    color: #000; /* Color for the Pokemon name */
-    /* You can add more styling as needed */
+    width: 80px;
+    height: 80px;
+}
+
+.pokemon-name {
+    position: absolute;
+    top: 90%; /* Adjust the top position to your preference */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+    color: #000;
 }

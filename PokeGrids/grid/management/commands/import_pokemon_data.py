@@ -15,6 +15,6 @@ class Command(BaseCommand):
                     type1=row['type_1'],
                     type2=row['type_2'],
                     generation=row['generation'],
-                    lengendary=row['status'],
+                    legendary=row['status'],
                 )
         self.stdout.write(self.style.SUCCESS('Successfully imported Pokemon data'))

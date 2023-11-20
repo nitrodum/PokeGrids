@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 
 class Pokemon(models.Model):
+    pokedex_number = models.CharField(max_length=20, default='0')  
     name = models.CharField(max_length=100, unique=True)
     type1 = models.CharField(max_length=50)
     type2 = models.CharField(max_length=50, default="None")

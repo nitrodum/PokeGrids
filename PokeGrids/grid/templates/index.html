@@ -304,6 +304,9 @@
                                 percentageElement.className = 'percentage';
                                 percentageElement.textContent = `${percentage.toFixed(2)}%`;
 
+                                var pokemonImageElement = document.createElement('img');
+                                pokemonImageElement.src = `{% static 'img/pokemon//main-sprites/' %}${pokemon.pokedex_number}.png`;
+
                                 var pokemonNameElement = document.createElement('div');
                                 pokemonNameElement.className = 'pokemon-name';
                                 pokemonNameElement.textContent = pokemon.name;
@@ -311,6 +314,7 @@
                                 // Clear existing content and append the new elements
                                 selectedGridItem.innerHTML = '';
                                 selectedGridItem.appendChild(percentageElement);
+                                selectedGridItem.appendChild(pokemonImageElement);
                                 selectedGridItem.appendChild(pokemonNameElement);
 
                             });
@@ -319,9 +323,6 @@
                         console.error('Error:', error);
                         // Handle the error as needed
                     });
-
-                    
-                    
 
                     //Check to see if the grid is completed and send a submission if full
                     if (selectedPokemon.length === 9) {
