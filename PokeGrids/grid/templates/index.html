@@ -179,8 +179,17 @@
                             option.style.alignItems = 'center';
 
                             var pokemonImage = document.createElement('img');
-                            pokemonImage.src = `{% static 'img/pokemon/main-sprites/' %}${pokemon.pokedex_number}.png`;
-                            pokemonImage.className = 'pokemon-dropdown-image'; // Add a class for styling
+                            pokemonImage.className = 'pokemon-dropdown-image';
+
+                             
+
+                            // Check if the image with the specified Pokédex number exists
+                            doesImageExist(pokemon.pokedex_number, function (exists) {
+                                // Update the image source based on whether it exists or not
+                                pokemonImage.src = exists
+                                    ? `{% static 'img/pokemon/main-sprites/' %}${pokemon.pokedex_number}.png`
+                                    : '{% static 'img/pokemon/main-sprites/0.png' %}';
+                            });
 
                             var nameSpan = document.createElement('span');
                             nameSpan.textContent = pokemon.name;
@@ -213,6 +222,16 @@
                 });
         }
 
+        function doesImageExist(pokedexNumber, callback) {
+            var img = new Image();
+            img.onload = function () {
+                callback(true);
+            };
+            img.onerror = function () {
+                callback(false);
+            };
+            img.src = `{% static 'img/pokemon/main-sprites/' %}${pokedexNumber}.png`;
+        }
 
     
         // Handle clicks outside the modal to close it
