@@ -93,6 +93,7 @@
                     <div class="grid-item row3 col3" onclick="handleClick(this, event)"></div>
                 </div>
             </div>
+            <button id="clear-grid-button" onclick="clearGrid()">Clear Grid</button>
         </div>
     </main>
 
@@ -359,7 +360,6 @@
                     //Check to see if the grid is completed and send a submission if full
                     if (selectedPokemon.length === 9) {
                         submitGrid();
-                        closeSearchModal();
                     }
                 }
             }
@@ -419,6 +419,7 @@
         // Function to handle the submission process
         function submitGrid() {
             alert("Submitting the grid!");
+            closeSearchModal();
             var gridIndex = 0;
             for (let row = 1; row <= 3; row++) {
                 for (let col = 1; col <= 3; col++) {
@@ -470,6 +471,27 @@
             const currentDate = new Date();
             return `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
         }
+
+        function clearGrid() {
+            // Remove the 'selected' class from any selected grid item
+            var selectedGridItem = document.querySelector('.grid-item.selected');
+            if (selectedGridItem) {
+                selectedGridItem.classList.remove('selected');
+            }
+
+            // Clear the content of all grid items
+            var gridItems = document.querySelectorAll('.grid-item');
+            gridItems.forEach(item => {
+                item.innerHTML = '';
+            });
+
+            // Clear the selectedPokemon array
+            selectedPokemon = [];
+
+            // Hide the search modal
+            closeSearchModal();
+        }
+
 
         // Function to get CSRF token from cookie
         function getCookie(name) {
