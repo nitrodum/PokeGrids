@@ -37,3 +37,7 @@ class PokemonStatistic(models.Model):
 
     class Meta:
         unique_together = ['pokemon', 'grid', 'date']
+
+class Score(models.Model):
+    score = models.FloatField()
+    date = models.DateField(auto_now_add=True)
