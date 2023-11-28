@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.db.models import Count
-from .models import Grid, Pokemon, Submission, PokemonStatistic
+from .models import Grid, Pokemon, Submission, PokemonStatistic, Score
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
-from .serializers import PokemonSerializer, SubmissionSerializer, PokemonStatisticSerializer
+from .serializers import PokemonSerializer, SubmissionSerializer, PokemonStatisticSerializer, ScoreSerializer
 
 # Create your views here.
 def index(request):
@@ -32,12 +32,15 @@ class SubmissionViewSet(viewsets.ModelViewSet):
         # Call the parent perform_create method to save the submission
         submission = serializer.save()
 
+        # Extract the date component from the timestamp and update the submission date
+        submission.date = submission.timestamp.date()
+        submission.save()
         
          # Check if a PokemonStatistics instance already exists for the given grid, Pokemon, and date
         pokemon_statistic, created = PokemonStatistic.objects.get_or_create(
             grid=submission.grid,
             pokemon=submission.pokemon,
-            date=submission.date,
+            date = submission.date,
             defaults={'submission_count': 1}  # Set the default value if creating a new instance
         )
 
@@ -52,6 +55,10 @@ class SubmissionViewSet(viewsets.ModelViewSet):
 class PokemonStatisticViewSet(viewsets.ModelViewSet):
     queryset = PokemonStatistic.objects.all()
     serializer_class = PokemonStatisticSerializer
+
+class ScoreViewSet(viewsets.ModelViewSet):
+    queryset = Score.objects.all()
+    serializer_class = ScoreSerializer
 
 def get_submission_count(request, date):
     try:

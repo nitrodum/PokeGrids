@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Pokemon, Submission, PokemonStatistic
+from .models import Pokemon, Submission, PokemonStatistic, Score
 
 class PokemonSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,3 +15,8 @@ class PokemonStatisticSerializer(serializers.ModelSerializer):
     class Meta:
         model = PokemonStatistic
         fields = '__all__'
+
+class ScoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Score
+        fields = ['score', 'date']

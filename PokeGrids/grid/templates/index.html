@@ -104,6 +104,7 @@
         
         var selectedPokemon = [];
         var totalScore = 0;
+        const date = getFormattedDate();
 
         // Define a debounce function
         function debounce(func, delay) {
@@ -193,7 +194,7 @@
                                 // Update the image source based on whether it exists or not
                                 pokemonImage.src = exists
                                     ? `{% static 'img/pokemon/main-sprites/' %}${pokemon.pokedex_number}.png`
-                                    : '{% static 'img/pokemon/main-sprites/0.png' %}';
+                                    : `{% static 'img/pokemon/main-sprites/0.png' %}`;
                             });
 
                             var nameSpan = document.createElement('span');
@@ -291,8 +292,6 @@
                 var rowValue = parseInt(rowClass.replace("row", ""), 10);
                 var colValue = parseInt(colClass.replace("col", ""), 10);
 
-                console.log(rowValue);
-
                 // Check the class selectors of rowTrait and colTrait
                 var rowSelector = [...rowTrait.classList].find(className => className.startsWith('selector'));
                 var colSelector = [...colTrait.classList].find(className => className.startsWith('selector'));
@@ -315,17 +314,13 @@
                     selectedPokemon.push(pokemon.name);
 
                     // Calculate the percentage for the selected Pokemon in this grid
-                    var date = getFormattedDate();
                     var gridIndex = getGridIndex(rowValue, colValue)
-                    getTotalSubmissionsInGrid(date)
+                    getTotalSubmissionsInGrid()
                     .then(totalSubmissions => {
-                        return getPokemonStatisticCount(gridIndex, pokemon.name, date)
+                        return getPokemonStatisticCount(gridIndex, pokemon.name)
                             .then(selectedPokemonCount => {
 
                                 var percentage = (selectedPokemonCount / totalSubmissions) * 100;
-                                console.log('total submissions: ' + totalSubmissions);
-                                console.log('selectedPokemonCount: ' + selectedPokemonCount);
-                                console.log(percentage);
 
                                 updateScore(percentage);
 
@@ -340,7 +335,7 @@
                                     // Update the image source based on whether it exists or not
                                     pokemonImageElement.src = exists
                                         ? `{% static 'img/pokemon/main-sprites/' %}${pokemon.pokedex_number}.png`
-                                        : '{% static 'img/pokemon/main-sprites/0.png' %}';
+                                        : `{% static 'img/pokemon/main-sprites/0.png' %}`;
                                 });
 
                                 var pokemonNameElement = document.createElement('div');
@@ -362,12 +357,33 @@
 
                     //Check to see if the grid is completed and send a submission if full
                     if (selectedPokemon.length === 9) {
+                        // Call the combined function
+                        submitScoreAndGetAverageScore()
+                            .then(() => console.log('All operations completed'))
+                            .catch(error => console.error('Error:', error));
                         submitGrid();
                     }
                 }
             }
-
             closeSearchModal();
+        }
+
+        function submitScoreAndGetAverageScore() {
+            return new Promise((resolve, reject) => {
+                submitScore(totalScore)
+                    .then(() => {
+                        console.log('submitScore completed');
+                        return getAverageScore();
+                    })
+                    .then(() => {
+                        console.log('getAverageScore completed');
+                        resolve();
+                    })
+                    .catch(error => {
+                        console.error('Error in ScoreAndGetAverage:', error);
+                        reject(error);
+                    });
+            });
         }
 
         function updateScore(percentage) {
@@ -378,14 +394,14 @@
                 totalScoreElement.textContent = `${totalScore.toFixed(2)}`;
             }
 
-    console.log('Total Score:', totalScore);
+   
         }
 
         function getGridIndex(row, col) {
             return (row - 1) * 3 + (col - 1)
         }
 
-        function getTotalSubmissionsInGrid(date) {
+        function getTotalSubmissionsInGrid() {
             return fetch(`/api/submission-count/${date}/`)
                 .then(response => response.json())
                 .then(data => {
@@ -405,7 +421,7 @@
                 });
         }
 
-        function getPokemonStatisticCount(grid, pokemonName, date) {
+        function getPokemonStatisticCount(grid, pokemonName) {
             return fetch(`/api/pokemon-statistic-count/${grid}/${pokemonName}/${date}/`)
                 .then(response => {
                     if (response.ok) {
@@ -432,81 +448,157 @@
 
         // Function to handle the submission process
         function submitGrid() {
+            console.log('Inside submitGrid');
             alert("Submitting the grid!");
             closeSearchModal();
             var gridIndex = 0;
             for (let row = 1; row <= 3; row++) {
                 for (let col = 1; col <= 3; col++) {
-                    // Get the selected Pokemon name from the grid item
-                    sendPayload(gridIndex, row, col);
-                    gridIndex++;
+                // Get the selected Pokemon name from the grid item
+                sendPayload(gridIndex, row, col);
+                gridIndex++;
                 }
             }
+
         }
 
-        function sendPayload(gridIndex, row, col) {
-            const gridItem = document.querySelector(`.grid-item.row${row}.col${col}`);
-            const pokemonName = gridItem.querySelector('.pokemon-name').textContent; 
-            if (pokemonName) {
-                // Create the payload for the POST request
-                var formattedDate = getFormattedDate();
-                const payload = {
-                    grid: gridIndex,
-                    date: formattedDate, // Add the current date or adjust as needed
-                    pokemon: pokemonName, // Assuming 'name' is the identifier for the Pokemon
+        function submitScore(score) {
+            console.log('Inside submitScore');
+            return new Promise((resolve, reject) => {
+                var scoreAsFloat = parseFloat(score);
+                var payload = {
+                    score: score,
+                    date: date,
                 };
-                console.log(payload)
-                // Send a POST request to the API endpoint
-                fetch('/api/submission/', {
+
+                fetch('/api/score/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken'), // Include CSRF token
+                        'X-CSRFToken': getCookie('csrftoken'), 
                     },
                     body: JSON.stringify(payload),
                 })
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    console.log('Response status:', response.status);  // Log the response status
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Score submission failed');
                     }
-                    return response.json();
                 })
                 .then(data => {
-                    console.log('Submission successful:', data);
+                    console.log('Score submission successful:', data);
+                    resolve();  // Resolve the promise
                 })
                 .catch(error => {
-                    console.error('Error submitting grid:', error);
-                    // Handle the error as needed
+                    console.error('Error submitting score:', error);
+                    reject(error);  // Reject the promise with an error
                 });
+            });
+        }
+
+        function getAverageScore(){
+            // Make a GET request to the scores endpoint
+            fetch('/api/score/')
+                .then(response => {
+                // Check if the request was successful (status code 2xx)
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json(); // Parse the response JSON
+                })
+                .then(scores => {
+                // Filter scores for the current day (you may need to adjust the date comparison)
+                const scoresForDay = scores.filter(score => score.date === date);
+
+                // Calculate the average score
+                if (scoresForDay.length > 0) {
+                    // Sort scores in descending order
+                    const sortedScores = scoresForDay.map(score => score.score).sort((a, b) => b - a);
+                    console.log(sortedScores);
+                    // Find the index of the current score in the sorted array
+                    const rank = sortedScores.indexOf(totalScore);
+                    // Calculate the percentile
+                    const percentile = ((rank + 1) / (sortedScores.length + 1)) * 100;
+
+                    // Log or use the percentile as needed
+                    console.log(`Current Score is at the ${percentile.toFixed(2)}th percentile`);
+                } else {
+                    console.log(`No scores available for ${date}`);
+                }
+                })
+                .catch(error => {
+                // Handle errors (e.g., network issues, server errors)
+                console.error('Error fetching scores:', error);
+                });
+            }
+
+                    
+
+
+        function sendPayload(gridIndex, row, col) {
+            const gridItem = document.querySelector(`.grid-item.row${row}.col${col}`);
+            if (gridItem) { 
+                const pokemonNameElement = gridItem.querySelector('.pokemon-name');
+                const pokemonName = pokemonNameElement ? pokemonNameElement.textContent : null;
+
+                if (pokemonName) {
+                    const payload = {
+                        grid: gridIndex,
+                        date: date,
+                        pokemon: pokemonName,
+                    };
+                    fetch('/api/submission/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken'),
+                        },
+                        body: JSON.stringify(payload),
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! Status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Submission successful:', data);
+                        })
+                        .catch(error => {
+                            console.error('Error submitting grid:', error);
+                        });
+                }
             }
         }
 
+
         function getFormattedDate() {
             const currentDate = new Date();
-            return `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
+            const utcDate = new Date(Date.UTC(
+                currentDate.getUTCFullYear(),
+                currentDate.getUTCMonth(),
+                currentDate.getUTCDate()
+            ));
+            return `${utcDate.getUTCFullYear()}-${(utcDate.getUTCMonth() + 1).toString().padStart(2, '0')}-${utcDate.getUTCDate().toString().padStart(2, '0')}`;
         }
 
         function clearGrid() {
-            // Remove the 'selected' class from any selected grid item
             var selectedGridItem = document.querySelector('.grid-item.selected');
             if (selectedGridItem) {
                 selectedGridItem.classList.remove('selected');
             }
 
-            // Clear the content of all grid items
             var gridItems = document.querySelectorAll('.grid-item');
             gridItems.forEach(item => {
                 item.innerHTML = '';
             });
 
-            // Clear the selectedPokemon array
             selectedPokemon = [];
-
             var score = document.getElementById('total-score');
             score.innerHTML= '0.00';
-
             totalScore = 0;
-            // Hide the search modal
             closeSearchModal();
         }
 

@@ -1,12 +1,13 @@
 from django.urls import path, include
 from . import views
 from rest_framework.routers import DefaultRouter
-from .views import PokemonViewSet, SubmissionViewSet, PokemonStatisticViewSet
+from .views import PokemonViewSet, SubmissionViewSet, PokemonStatisticViewSet, ScoreViewSet
 
 router = DefaultRouter()
 router.register(r'pokemon', PokemonViewSet, basename='pokemon')
 router.register(r'submission', SubmissionViewSet, basename='submission')
 router.register(r'pokemon-statistic', PokemonStatisticViewSet, basename='pokemon-statistic')
+router.register(r'score', ScoreViewSet, basename='score')
 
 urlpatterns = [
     path('', views.index, name='index'),

@@ -20,7 +20,7 @@ class Grid(models.Model):
     generation = models.IntegerField()
     evolution_stage = models.IntegerField()
     legendary = models.BooleanField()
-    date = models.DateField()
+    date = models.DateField(auto_now_add=True)
 
 class Submission(models.Model):
     grid = models.IntegerField()
@@ -40,4 +40,4 @@ class PokemonStatistic(models.Model):
 
 class Score(models.Model):
     score = models.FloatField()
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField()
