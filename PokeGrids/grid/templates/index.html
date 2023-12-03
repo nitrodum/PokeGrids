@@ -52,7 +52,13 @@
                 {% for item in grid_data|slice:":3" %}
                     {% if item.selected == 1 %}
                         <div class="col-characteristic selector1" id="trait-col{{forloop.counter}}">
+                        {% if item.type == "Mono" %}
+                            <span class="typing Mono" style="border-radius: 4px;">Mono Type</span>
+                        {% elif item.type == "Dual" %}
+                            <span class="typing Dual" style="border-radius: 4px;">Dual Type</span>
+                        {% else %}
                             <span class="type {{item.type}}" style="border-radius: 4px;"></span>
+                        {% endif %}
                         </div>
                     {% elif item.selected == 2 %}
                         <div class="col-characteristic selector2" id="trait-col{{forloop.counter}}">Gen {{item.generation}}</div>
@@ -69,7 +75,13 @@
                 {% for item in grid_data|slice:"3:" %}
                     {% if item.selected == 1 %}
                         <div class="row-characteristic selector1" id="trait-row{{forloop.counter}}">
-                            <span class="type {{item.type}}" style="border-radius: 4px;"></span>
+                            {% if item.type == "Mono" %}
+                                <span class="Mono">Mono Type</span>
+                            {% elif item.type == "Dual" %}
+                                <span class="Dual">Dual Type</span>
+                            {% else %}
+                                <span class="type {{item.type}}" style="border-radius: 4px;"></span>
+                            {% endif %}
                         </div>
                     {% elif item.selected == 2 %}
                         <div class="row-characteristic selector2" id="trait-row{{forloop.counter}}">Gen {{item.generation}}</div>
@@ -252,6 +264,12 @@
         function checkTrait(pokemon, trait, traitText, selector) {
             switch (`${selector}`) {
                 case 'selector1':
+                    var typingSpan = trait.querySelector('.typing');
+                        if (typingSpan && typingSpan.textContent == "Mono Type") {
+                            return pokemon.type2.trim() === '';
+                        } else if (typingSpan && typingSpan.textContent == "Dual Type") {
+                            return !(pokemon.type2.trim() === '');
+                        }
                     var typeSpan = trait.querySelector('.type');
                     return typeSpan && (typeSpan.classList.contains(pokemon.type1.toLowerCase()) || typeSpan.classList.contains(pokemon.type2.toLowerCase()));
                 case 'selector2':

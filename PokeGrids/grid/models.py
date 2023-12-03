@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 
 # Create your models here.
 
@@ -16,11 +17,15 @@ class Pokemon(models.Model):
 
 class Grid(models.Model):
     selected = models.IntegerField()
-    type = models.CharField(max_length=50)
-    generation = models.IntegerField()
-    evolution_stage = models.IntegerField()
-    legendary = models.BooleanField()
-    date = models.DateField(auto_now_add=True)
+    type = models.CharField(max_length=50, default='')
+    generation = models.IntegerField(default=0)
+    evolution_stage = models.IntegerField(default=0)
+    legendary = models.BooleanField(default=False)
+    date = models.DateField()
+
+class ArchivedGrid(models.Model):
+    date = models.DateField(unique=True)
+    grid_data = ArrayField(models.CharField(max_length=100), size=9)
 
 class Submission(models.Model):
     grid = models.IntegerField()

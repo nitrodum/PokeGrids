@@ -77,8 +77,12 @@ WSGI_APPLICATION = 'PokeGrids.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'PokeGrid Test',
+        'USER': 'postgres',
+        'PASSWORD': 'Nitro!12',
+        'HOST': 'localhost',
+        'PORT': '5432', 
     }
 }
 

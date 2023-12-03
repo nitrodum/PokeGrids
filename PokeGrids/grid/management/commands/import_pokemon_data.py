@@ -8,9 +8,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         file_path = 'C:\\Users\\nitro\\OneDrive\\Documents\\Projects\\pokedex.csv'        
         with open(file_path, 'r', encoding='utf-8') as file:
-            reader = csv.DictReader(file_path)
+            reader = csv.DictReader(file)
             for row in reader:
                 Pokemon.objects.create(
+                    pokedex_number=int(row['pokedex_number']),
                     name=row['name'],
                     type1=row['type_1'],
                     type2=row['type_2'],
