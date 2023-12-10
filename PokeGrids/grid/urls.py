@@ -13,6 +13,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('create-grid/', views.test_grid, name='create-grid'),
     path('api/', include(router.urls)),
+    path('api/pokemon-statistic/<int:grid>/<str:pokemon_name>/<str:date>/', PokemonStatisticViewSet.as_view({'get': 'get_statistic_count'}), name='get-statistic-count'),
+    path('api/pokemon-statistic/<int:grid>/<str:date>/', PokemonStatisticViewSet.as_view({'get': 'get_most_submitted'}, name='get-most-submitted')),
     path('api/submission-count/<str:date>/', views.get_submission_count, name='submission_count'),
-    path('api/pokemon-statistic-count/<int:grid>/<str:pokemon_name>/<str:date>/', views.get_pokemon_statistic_count, name='pokemon_statistic_count'),
 ]

@@ -1,5 +1,3 @@
-
-
 body {
     background-color: #f0f0f0;
     margin: 0;
@@ -7,7 +5,7 @@ body {
 }
 
 header {
-    background-color: #333; /* Dark gray background color for the header */
+    background-color: #333;
     color: #fff;
     padding: 0 35px;
     box-sizing: border-box;
@@ -38,37 +36,37 @@ nav a {
 }
 
 nav a:hover {
-    color: #555; /* Hover color for the nav links */
+    color: #555; 
 }
 
 .grid-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    z-index: 0; /* Set a lower z-index value for the grid */
+    z-index: 0; 
 }
 
 .grid-item {
     width: 12rem;
     height:  12rem;
-    background-color: #ddd; /* Light gray background color for the grid items */
-    border: 1px solid #aaa; /* Add a border to make the empty grid items visible */
+    background-color: #ddd; 
+    border: 1px solid #aaa; 
     border-radius: 5px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    position: relative; /* Add position relative to the grid item */
+    position: relative; 
     transition: background-color 0.3s;
 }
 
 .grid-item:hover {
-    background-color: #aaa; /* Hover color for the grid items */
+    background-color: #aaa; 
 }
 
 .top {
     display: flex;
-    flex-direction: row; /* Display items horizontally */
+    flex-direction: row;
 }
 
 .col-characteristic, .row-characteristic {
@@ -80,7 +78,7 @@ nav a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #aaa; /* Add a border to make the empty grid items visible */
+    border: 1px solid #aaa; 
     box-sizing: border-box;
 }
 
@@ -100,8 +98,8 @@ nav a:hover {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-    z-index: 1; /* Set a higher z-index value for the modal */
+    background-color: rgba(0, 0, 0, 0.5); 
+    z-index: 1; 
 }
 
 .modal-content {
@@ -110,15 +108,15 @@ nav a:hover {
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: #fff;
-    width: 60%; /* Adjust this value to your preference */
-    max-width: 500px; /* Set a maximum width if needed */
+    width: 60%; 
+    max-width: 500px; 
     padding: 15px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .modal-content input {
-    width: 100%; /* Make the search input fill the modal width */
+    width: 100%; 
     box-sizing: border-box;
     padding: 10px;
     margin-bottom: 10px;
@@ -132,35 +130,32 @@ nav a:hover {
     cursor: pointer;
 }
 
-/* Add this style for the "Select" button */
 #pokemon-list button {
-    display: block; /* Make the button a block-level element */
-    margin-left: auto; /* Move the button to the rightmost side */
+    display: block;
+    margin-left: auto; 
 }
 
-/* Update the style for the dropdown container */
 #pokemon-list {
     max-height: 175px;
     overflow-y: auto;
     border: 1px solid #ccc;
     border-radius: 5px;
     display: none;
-    padding: 20px; /* Add padding for better aesthetics */
-    z-index: 2; /* Set a higher z-index value for the dropdown */
+    padding: 20px;
+    z-index: 2; 
 }
 
 #pokemon-list div {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px; /* Adjust the margin to your preference */
+    margin-bottom: 20px; 
 }
 
 #pokemon-list span {
     flex: 1;
     align-items: center;
 }
-
 
 .percentage {
     position: absolute;
@@ -182,7 +177,7 @@ nav a:hover {
 
 .pokemon-name {
     position: absolute;
-    top: 90%; /* Adjust the top position to your preference */
+    top: 90%; 
     left: 50%;
     transform: translate(-50%, -50%);
     color: #000;
@@ -196,9 +191,96 @@ nav a:hover {
 #score-heading {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Align items to the start (top) of the container */
+    align-items: center; 
 }
 
 #total-score {
-    text-align: center; /* Centers the text */
+    text-align: center;
+}
+
+#postGameModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+#postGameModal .modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+#postGameModal .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #333;
+}
+
+.post-modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    max-width: 700px; 
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+#postGameModal .post-modal-content #smallerGridContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0; 
+    padding: 0; 
+}
+
+#postGameModal .post-modal-content .most-submitted {
+    width: 9rem;
+    height:  9rem;
+    background-color: #ddd; 
+    border: 1px solid #aaa; 
+    border-radius: 5px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative; 
+    transition: background-color 0.3s;
+}
+
+
+#postGameModal .pokemon-image {
+    max-width: 75%;
+    height: auto;
+}
+
+#postGameModal .percentage {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 18px;
+    color: rgb(24, 108, 163);
+}
+
+#postGameModal .pokemon-name {
+    position: absolute;
+    top: 90%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #000;
 }

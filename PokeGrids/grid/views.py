@@ -1,4 +1,6 @@
 import random
+from celery import Celery
+from celery.schedules import crontab
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Q
@@ -7,8 +9,14 @@ from django.utils import timezone
 from .models import Grid, Pokemon, Submission, PokemonStatistic, Score, ArchivedGrid
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from .serializers import PokemonSerializer, SubmissionSerializer, PokemonStatisticSerializer, ScoreSerializer
+
+target_utc_hour = 0
+target_utc_minute = 0
+
+celery_app = Celery('PokeGrids')
 
 # Create your views here.
 def index(request):
@@ -78,6 +86,25 @@ class SubmissionViewSet(viewsets.ModelViewSet):
 class PokemonStatisticViewSet(viewsets.ModelViewSet):
     queryset = PokemonStatistic.objects.all()
     serializer_class = PokemonStatisticSerializer
+    ordering_fields = ['']
+
+    @action(detail=False, methods=['get'])
+    def get_statistic_count(self, request, grid, pokemon_name, date):
+        try:
+            count = PokemonStatistic.objects.filter(grid=grid, pokemon__name=pokemon_name, date=date).first().submission_count
+            return Response({'count': count})
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+        
+    @action(detail=False, methods=['get'])
+    def get_most_submitted(self, request, grid, date):
+        try:
+            mostSubmittedPokemon = PokemonStatistic.objects.filter(grid=grid, date=date).order_by('-submission_count').first()
+            serializer = self.get_serializer(mostSubmittedPokemon)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+
 
 class ScoreViewSet(viewsets.ModelViewSet):
     queryset = Score.objects.all()
@@ -90,23 +117,17 @@ def get_submission_count(request, date):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)   
 
-def get_pokemon_statistic_count(request, grid, pokemon_name, date):
-    try:
-        count = PokemonStatistic.objects.filter(grid=grid, pokemon__name=pokemon_name, date=date).first().submission_count
-        return JsonResponse({'count': count})
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-
 def archive_current_grid():
+    # Move the logic for archiving the grid here
     yesterday = timezone.now() - timedelta(days=1)
     yesterday = yesterday.strftime('%Y-%m-%d')
-    # Retrieve the current grid data
     current_grid_data = get_current_grid_data(yesterday)
-
-    # Create a new ArchivedGrid instance with the current date and grid data
     ArchivedGrid.objects.create(date=yesterday, grid_data=current_grid_data)
     Grid.objects.all().delete()
     create_grid()
+
+    # Respond with a success message or redirect as needed
+    return HttpResponse("Archiving the current grid. This may take some time.")
 
 def get_current_grid_data(date):
     current_grid_data = []
@@ -127,13 +148,14 @@ def get_current_grid_data(date):
 
     return current_grid_data
 def test_grid(request):
-    create_grid()
+    archive_current_grid()
     return HttpResponse(timezone.now())
 def create_grid():
     selectors = [1,2,3,4]
     rowSelectorWeights = [16,1,0,1]
     colSelectorWeights = [16,1,0,1]
     types = ['normal', 'fire', 'water', 'grass', 'electric', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy', 'Mono', 'Dual']
+    random.shuffle(types)
     usedRowTypes = []
     usedColTypes = []
     baseGenertion = 1
@@ -252,6 +274,22 @@ def check_invalid_combination(type1, type2):
 
     return (type1, type2) in invalidCombinations or (type2, type1) in invalidCombinations
 
+def calculateTimeUntilNextOccurrence():
+    now_utc = timezone.now()
+    target_time = now_utc.replace(hour=target_utc_hour, minute=target_utc_minute, second=0, microsecond=0)
+
+    if now_utc > target_time:
+        target_time += timedelta(days=1)
+
+    timeUntilNextOccurrence = target_time - now_utc
+    return timeUntilNextOccurrence.total_seconds()
+
 def getDate():
     date = timezone.now().strftime('%Y-%m-%d')
     return date
+
+@celery_app.task
+def periodic_task():
+    from .tasks import archive_current_grid_task
+    archive_current_grid_task.apply_async(eta=timezone.now() + timedelta(days=1))
+       

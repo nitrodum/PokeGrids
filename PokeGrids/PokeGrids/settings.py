@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -121,7 +122,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'grid/static/'
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     "grid/static",
@@ -146,3 +147,12 @@ REST_FRAMEWORK = {
     ],
 }
 
+CELERY_BROKER_URL = 'pyamqp://guest:guest@localhost//'
+CELERY_RESULT_BACKEND = 'rpc://'
+
+CELERY_BEAT_SCHEDULE = {
+    'archive_current_grid_task': {
+        'task': 'grid.tasks.archive_current_grid_task',
+        'schedule': crontab(minute='0', hour='0'),  # Run at midnight UTC
+    },
+}

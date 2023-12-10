@@ -38,10 +38,31 @@
             <div class="modal-content">
                 <div>
                     <input placeholder="Search pokemon..." autocomplete="off" autocorrect="off" spellcheck="false" type="search" id="search-input">
+                    <!-- Dropdown list for Pokemon names -->
                     <div id="pokemon-list" style="max-height: 175px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; display: none;">
-                        <!-- Dropdown list for Pokemon names -->
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- PostGameModal Modal -->
+        <div class="modal" id="postGameModal">
+            <div class="post-modal-content">
+                <span class="close" onclick="closePostGameModal()">&times;</span>
+                <h2>Post-Game Statistics</h2>
+                <h3>Most Submited Per Grid</h3>
+                <div id="smallerGridContainer">
+                    <div class="most-submitted grid0"></div>
+                    <div class="most-submitted grid1"></div>
+                    <div class="most-submitted grid2"></div>
+                    <div class="most-submitted grid3"></div>
+                    <div class="most-submitted grid4"></div>
+                    <div class="most-submitted grid5"></div>
+                    <div class="most-submitted grid6"></div>
+                    <div class="most-submitted grid7"></div>
+                    <div class="most-submitted grid8"></div>
+                </div>
+                <!-- Add any other information you want to display -->
             </div>
         </div>
 
@@ -76,9 +97,9 @@
                     {% if item.selected == 1 %}
                         <div class="row-characteristic selector1" id="trait-row{{forloop.counter}}">
                             {% if item.type == "Mono" %}
-                                <span class="Mono">Mono Type</span>
+                                <span class="typing Mono">Mono Type</span>
                             {% elif item.type == "Dual" %}
-                                <span class="Dual">Dual Type</span>
+                                <span class="typing Dual">Dual Type</span>
                             {% else %}
                                 <span class="type {{item.type}}" style="border-radius: 4px;"></span>
                             {% endif %}
@@ -106,7 +127,9 @@
                 </div>
             </div>
             <button id="clear-grid-button" onclick="clearGrid()">Clear Grid</button>
+            <button id="open-postGameModal" onclick="openPostGameModal()">Show Statistics</button>
         </div>
+       
     </main>
 
     <footer>
@@ -257,6 +280,7 @@
             var modal = document.getElementById('search-modal');
             if (event.target == modal) {
                 closeSearchModal();
+                closePostGameModal();
             }
         };
 
@@ -366,21 +390,20 @@
                                 selectedGridItem.appendChild(pokemonImageElement);
                                 selectedGridItem.appendChild(pokemonNameElement);
 
+                                 //Check to see if the grid is completed and send a submission if full
+                                if (selectedPokemon.length === 9) {
+                                    // Call the combined function
+                                    submitScoreAndGetAverageScore()
+                                        .then(() => console.log('All operations completed'))
+                                        .catch(error => console.error('Error:', error));
+                                    submitGrid();
+                                }
                             });
                     })
                     .catch(error => {
                         console.error('Error:', error);
                         // Handle the error as needed
                     });
-
-                    //Check to see if the grid is completed and send a submission if full
-                    if (selectedPokemon.length === 9) {
-                        // Call the combined function
-                        submitScoreAndGetAverageScore()
-                            .then(() => console.log('All operations completed'))
-                            .catch(error => console.error('Error:', error));
-                        submitGrid();
-                    }
                 }
             }
             closeSearchModal();
@@ -425,7 +448,7 @@
                 .then(data => {
                     if ('count' in data) {
                         if (data.count !== 0){
-                            return data.count/8;
+                            return data.count/9;
                         } else {
                             return 1;
                         }
@@ -440,7 +463,7 @@
         }
 
         function getPokemonStatisticCount(grid, pokemonName) {
-            return fetch(`/api/pokemon-statistic-count/${grid}/${pokemonName}/${date}/`)
+            return fetch(`api/pokemon-statistic/${grid}/${pokemonName}/${date}/`)
                 .then(response => {
                     if (response.ok) {
                         return response.json();
@@ -477,7 +500,8 @@
                 gridIndex++;
                 }
             }
-
+            fetchPostGameStatistics();
+            
         }
 
         function submitScore(score) {
@@ -538,10 +562,11 @@
                     // Find the index of the current score in the sorted array
                     const rank = sortedScores.indexOf(totalScore);
                     // Calculate the percentile
-                    const percentile = ((rank + 1) / (sortedScores.length + 1)) * 100;
+                    const percentile = ((rank) / (sortedScores.length)) * 100;
 
                     // Log or use the percentile as needed
                     console.log(`Current Score is at the ${percentile.toFixed(2)}th percentile`);
+                    appendPercentileToModal(percentile);
                 } else {
                     console.log(`No scores available for ${date}`);
                 }
@@ -635,6 +660,96 @@
                 }
             }
             return cookieValue;
+        }
+
+        function openPostGameModal() {
+            var postGameModal = document.getElementById('postGameModal');
+            if (postGameModal) {
+                postGameModal.style.display = 'block';
+            }
+        }
+
+        function closePostGameModal() {
+            var postGameModal = document.getElementById('postGameModal');
+            if (postGameModal) {
+                postGameModal.style.display = 'none';
+            }
+        }
+
+        function fetchPostGameStatistics() {
+            for (var i = 0; i < 9; i++){
+                fetchMostSubmittedPokemon(i);
+            }
+            openPostGameModal();
+        }
+
+        function fetchMostSubmittedPokemon(grid){
+            console.log(grid);
+            console.log(date);
+            fetch(`/api/pokemon-statistic/${grid}/${date}/`)
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                })
+                .then(data => {
+                    // Update the modal content with the fetched data
+                    updatePostGameModalContent(grid, data);
+                })
+                .catch(error => {
+                    console.error('Error fetching most submitted Pokemon:', error);
+                    // Handle the error as needed
+                });
+        }
+
+        function updatePostGameModalContent(grid, data) {
+        var mostSubmittedItem = document.querySelector(`.most-submitted.grid${data.grid}`);
+        
+        if (mostSubmittedItem) {
+            getTotalSubmissionsInGrid()
+            .then(totalSubmissions => {
+                var percentage = (data.submission_count / totalSubmissions) * 100
+                var percentageElement = document.createElement('div');
+                percentageElement.className = 'percentage';
+                percentageElement.textContent = `${percentage.toFixed(2)}%`;
+
+                var pokemonImageElement = document.createElement('img');
+                pokemonImageElement.className = 'pokemon-image';
+
+                var pokedexNumber = data.pokemon.pokedex_number;
+
+                doesImageExist(pokedexNumber, function (exists) {
+                    // Update the image source based on whether it exists or not
+                    pokemonImageElement.src = exists
+                        ? `{% static 'img/pokemon/main-sprites/' %}${pokedexNumber}.png`
+                        : `{% static 'img/pokemon/main-sprites/0.png' %}`;
+                });
+
+                var pokemonNameElement = document.createElement('div');
+                pokemonNameElement.className = 'pokemon-name';
+                pokemonNameElement.textContent = data.pokemon.name;
+
+                // Clear existing content and append the new elements
+                mostSubmittedItem.innerHTML = '';
+                mostSubmittedItem.appendChild(percentageElement);
+                mostSubmittedItem.appendChild(pokemonImageElement);
+                mostSubmittedItem.appendChild(pokemonNameElement);
+            })
+        }
+    }
+
+        function appendPercentileToModal(percentile) {
+            // Append percentile to the postGameModal
+            var postGameModal = document.getElementById('postGameModal');
+            if (postGameModal) {
+                var percentileElement = document.createElement('div');
+                percentileElement.textContent = `Your submission was in the ${percentile.toFixed(2)}th percentile!`;
+
+                // Append the percentile element after the h2 of the postGameModal
+                postGameModal.querySelector('h2').insertAdjacentElement('afterend', percentileElement);
+            }
         }
     
     </script>

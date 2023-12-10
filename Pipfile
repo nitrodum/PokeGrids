@@ -8,6 +8,9 @@ django = "*"
 djangorestframework = "*"
 django-filter = "*"
 psycopg2 = "*"
+schedule = "*"
+celery = "*"
+redis = "*"
 
 [dev-packages]
 
