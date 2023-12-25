@@ -20,4 +20,4 @@ class PokemonStatisticSerializer(serializers.ModelSerializer):
 class ScoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Score
-        fields = ['score', 'date']
+        fields = '__all__'

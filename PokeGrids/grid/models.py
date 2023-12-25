@@ -24,20 +24,20 @@ class Grid(models.Model):
     date = models.DateField()
 
 class ArchivedGrid(models.Model):
-    date = models.DateField(unique=True)
+    date = models.DateField(unique=True, db_index=True)
     grid_data = ArrayField(models.CharField(max_length=100), size=9)
 
 class Submission(models.Model):
     grid = models.IntegerField()
     pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE, to_field='name')
     timestamp = models.DateTimeField(auto_now_add=True)
-    date = models.DateField()
+    date = models.DateField(db_index=True)
     
 
 class PokemonStatistic(models.Model):
     grid = models.IntegerField()
     pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE, to_field='name')
-    date = models.DateField()
+    date = models.DateField(db_index=True)
     submission_count = models.IntegerField(default=0)
 
     class Meta:

@@ -344,14 +344,9 @@
                 if (rowCheck && colCheck) {
                     if (selectedGridItem.textContent) {
                         // Remove the corresponding Pokémon name from the selectedPokemon array
-                        var previousPokemonName = selectedGridItem.textContent;
-                        var indexToRemove = selectedPokemon.indexOf(previousPokemonName);
-                        
-                        if (indexToRemove !== -1) {
-                            selectedPokemon.splice(indexToRemove, 1);
-                        }
+                        var previousPokemonName = selectedGridItem.querySelector('.pokemon-name').textContent;
+                        removePokemonName(selectedGridItem, previousPokemonName);
                     }
-
                     // Update the selected Pokemon and prevent it from being selected again
                     selectedPokemon.push(pokemon.name);
 
@@ -392,21 +387,31 @@
 
                                  //Check to see if the grid is completed and send a submission if full
                                 if (selectedPokemon.length === 9) {
-                                    // Call the combined function
-                                    submitScoreAndGetAverageScore()
-                                        .then(() => console.log('All operations completed'))
-                                        .catch(error => console.error('Error:', error));
-                                    submitGrid();
+                                     // Call the combined function
+                                     setTimeout(() => {
+                                        submitScoreAndGetAverageScore()
+                                            .then(() => console.log('All operations completed'))
+                                            .catch(error => console.error(error));
+                                        submitGrid();
+                                    },1);
                                 }
                             });
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        // Handle the error as needed
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            // Handle the error as needed
                     });
                 }
             }
             closeSearchModal();
+        }
+        
+        function removePokemonName(selectedGridItem, previousPokemonName) {
+            // Remove the corresponding Pokémon name from the selectedPokemon array
+            var indexToRemove = selectedPokemon.indexOf(previousPokemonName);
+            if (indexToRemove !== -1) {
+                selectedPokemon.splice(indexToRemove, 1);
+            }
         }
 
         function submitScoreAndGetAverageScore() {

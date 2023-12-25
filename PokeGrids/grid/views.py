@@ -1,20 +1,16 @@
 import random
+from datetime import timedelta
 from celery import Celery
-from celery.schedules import crontab
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Q
-from datetime import timedelta
 from django.utils import timezone
-from .models import Grid, Pokemon, Submission, PokemonStatistic, Score, ArchivedGrid
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
+from .models import Grid, Pokemon, Submission, PokemonStatistic, Score, ArchivedGrid
 from .serializers import PokemonSerializer, SubmissionSerializer, PokemonStatisticSerializer, ScoreSerializer
-
-target_utc_hour = 0
-target_utc_minute = 0
 
 celery_app = Celery('PokeGrids')
 
@@ -274,22 +270,15 @@ def check_invalid_combination(type1, type2):
 
     return (type1, type2) in invalidCombinations or (type2, type1) in invalidCombinations
 
-def calculateTimeUntilNextOccurrence():
-    now_utc = timezone.now()
-    target_time = now_utc.replace(hour=target_utc_hour, minute=target_utc_minute, second=0, microsecond=0)
-
-    if now_utc > target_time:
-        target_time += timedelta(days=1)
-
-    timeUntilNextOccurrence = target_time - now_utc
-    return timeUntilNextOccurrence.total_seconds()
 
 def getDate():
     date = timezone.now().strftime('%Y-%m-%d')
     return date
 
-@celery_app.task
-def periodic_task():
+def schedule_next_task():
     from .tasks import archive_current_grid_task
-    archive_current_grid_task.apply_async(eta=timezone.now() + timedelta(days=1))
-       
+    from celery.utils.log import get_task_logger
+    logger = get_task_logger(__name__)
+    logger.info("Scheduling the next task.")
+    result = archive_current_grid_task.apply_async(countdown=24 * 60 * 60)
+    logger.info(f"Next task scheduled. Result ID: {result.id}")

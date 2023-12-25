@@ -26,7 +26,7 @@ print(types)
 types = [t for t in types if t not in {'Mono', 'Dual'}]
 print(types)
 '''
-
+'''
 def check_invalid_combination(type1, type2):
     invalidCombinations = [
         ('normal', 'ice'), ('normal','bug'), ('normal','rock'), ('normal', 'steel'), ('fire', 'fairy'), ('ice', 'poison'), ('ground', 'fairy'), ('bug', 'dragon'),
@@ -47,6 +47,56 @@ for i in range(6):
         types.remove(types[i])
         print(f'After {i}: {types[i]}')
     print(f'Outside {i}: {types[i]}')
+'''
+
+def decode(message_file):
+    # Read the contents of the file
+    with open(message_file, 'r') as file:
+        file_content = file.readlines()
+
+    # Create a dictionary to store the associations between numbers and words
+    number_word_dict = {}
+
+    # Loop through each line in the file content
+    for line in file_content:
+        # Split the line into words
+        words = line.split()
+
+        # Extract the number and word from the line
+        number = int(words[0])
+        word = words[1]
+
+        # Store the association in the dictionary
+        number_word_dict[number] = word
+
+    # Sort the dictionary by keys to arrange numbers in ascending order
+    sorted_numbers = sorted(number_word_dict.keys())
+    print(sorted_numbers)
+    # Extract the corresponding words and create the decoded message
+    decoded_message = create_decoded_message(sorted_numbers, number_word_dict)
+
+    # Return the decoded message as a string
+    return decoded_message
 
 
+def create_decoded_message(sorted_numbers, word_dict):
+    decoded_words = []
 
+    row_end = 1
+    row_index = 1
+
+    for number in sorted_numbers:
+        if row_index == row_end:
+            decoded_words.append(word_dict[number])
+            row_end += 1
+            row_index = 1
+        else:
+            row_index += 1
+
+    decoded_words = ' '.join(decoded_words)
+    return decoded_words
+
+# Example usage:
+message_file_path = r'C:\Users\nitro\OneDrive\Documents\Projects\coding_qual_input.txt'
+result = decode(message_file_path)
+print(result)

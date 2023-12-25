@@ -11,7 +11,7 @@ class Command(BaseCommand):
             reader = csv.DictReader(file)
             for row in reader:
                 name = row['name']
-                pokedex_number = int(row['pokedex_number'])
+                pokedex_number = (row['pokedex_number'])
                 
                 try:
                     pokemon = Pokemon.objects.get(name=name)
