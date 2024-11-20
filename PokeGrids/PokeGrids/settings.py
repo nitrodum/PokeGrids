@@ -87,23 +87,23 @@ WSGI_APPLICATION = 'PokeGrids.wsgi.application'
 # When connected without cloud proxy
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'pokegrids-database',
-#         'USER': 'pokegrids-instance',
-#         'PASSWORD': 's1sl$$vS7.=_icv7',
-#         'HOST': '/cloudsql/pokegridswebapp:us-central1:pokegrids-instance',
-#         'PORT': '5432', 
+#         'ENGINE': '**************',
+#         'NAME': '**************',
+#         'USER': '**************',
+#         'PASSWORD': '**************',
+#         'HOST': '**************',
+#         'PORT': '**************',
 #     }
 # }
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'pokegrids-database',
-        'USER': 'pokegrids-instance',
-        'PASSWORD': 's1sl$$vS7.=_icv7',
-        'HOST': '34.132.164.149',
-        'PORT': '5432', 
+        'ENGINE': '**************',
+        'NAME': '**************',
+        'USER': '**************',
+        'PASSWORD': '**************',
+        'HOST': '**************',
+        'PORT': '**************',
     }
 }
 
