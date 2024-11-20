@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
+Allow: /privacy-policy/
+Sitemap: https://pokegrids.com/sitemap.xml

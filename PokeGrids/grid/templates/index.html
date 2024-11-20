@@ -7,25 +7,59 @@
 
     <!-- Load favicon -->
     <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico' %}" />
+    <!--Google Ad Sense-->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6657441205418784"
+     crossorigin="anonymous"></script>
 
     <!-- Include your CSS files here -->
-    <link rel="preload" as="style" href="{% static 'css/style.css' %}" onload="this.rel = 'stylesheet'" />
     <link rel="stylesheet" href="https://justingolden.me/pokemon-types-css/types.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PokeGrids</title>
+    <meta name="description" content="PokeGrids, A Pokémon-themed daily grid game. Fill the grid with Pokémon that fit the given characteristics. New grid every day at 7PM EST.">
+    <meta name="author" content="Nima Lama">
+    <meta name="keywords" content="PokeGrids, Pokémon, daily grid game, Pokémon grid, game, grid, pokemon, pokemon grid, pokemon-themed, pokemon themed, pokemon-themed daily grid game, pokemon themed daily grid game, pokedle, pokegrid, pokegrids, pokegrids.com, pokegrids.com">
+    <title>PokeGrids - A Pokémon-themed daily grid game</title>
+    <!--Open Graph / Facebook-->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pokegrids.">
+    <meta property="og:title" content="PokeGrids - A Pokémon-themed daily grid game">
+    <meta property="og:description" content="Play PokeGrids, A Pokémon-themed daily grid game. Fill the grid with Pokémon that fit the given characteristics. #pokegrids #pokemon">
+    <meta property="og:image" content="https://pokegrids.com/static/img/favicon.ico">
+    <meta property="og:image:secure_url" content="https://pokegrids.com/static/img/favicon.ico">
+    <!--Open Graph / Twitter-->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="PokeGrids - A Pokémon-themed daily grid game">
+    <meta property="twitter:description" content="Play PokeGrids, A Pokémon-themed daily grid game. Fill the grid with Pokémon that fit the given characteristics. #pokegrids #pokemon">
+    <meta property="og:image" content="https://pokegrids.com/static/img/favicon.ico">
+    <meta property="og:image:secure_url" content="https://pokegrids.com/static/img/favicon.ico">
+    <!--Canonical Link-->
+    <link rel="canonical" href="https://pokegrids.com/">
+    <!--Robots-->
+    <meta name="robots" content="index, follow">
+    <!--Google Analytics--->
+    <!--Google Site Verification-->
+    
 </head>
 
 <body>
     <header>
         <div class="container">
             <!-- Title -->
-            <h1>PokeGrid</h1>
-            <nav>
+            <h1>PokeGrids</h1>
             <!-- Nav Bar -->
+            <nav>
                 <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Twitter</a></li>
-                    <li><a href="#">Help</a></li>
+                    <li><a href="#" id="statsNav">Stats</a></li>
+                    <li><a href="https://twitter.com/PokeGrids" target="_blank">Twitter</a></li>
+                    <li><a href="#" id="helpNav">Help</a></li>
+                    <li> Dark Mode </li>
+                    <li><label class="darkModeSwitch">
+                        <input type="checkbox" id="darkModeSwitch">
+                        <span class="darkModeSlider round"></span>
+                        </label>
+                    </li>
                     <!-- Add more links as needed -->
                 </ul>
             </nav>
@@ -45,7 +79,7 @@
             </div>
         </div>
 
-        <!-- PostGameModal Modal -->
+        <!-- PostGame Modal -->
         <div class="modal" id="postGameModal">
             <div class="post-modal-content">
                 <span class="close" onclick="closePostGameModal()">&times;</span>
@@ -63,6 +97,125 @@
                     <div class="most-submitted grid8"></div>
                 </div>
                 <!-- Add any other information you want to display -->
+            </div>
+        </div>
+
+        <!-- Personal Stats Modal -->
+        <div class="modal" id="personalStatsModal">
+            <div class="modal-content">
+                <span class="close" onclick="closePersonalStatsModal()">&times;</span>
+                <h2 style="text-align: center;">Personal Statistics</h2>
+                <!-- Statistics Content -->
+                <div class="stats-content container">
+                    <div class="stat-item grid-solved">
+                        <div class="stat-description">Grids Solved:</div>
+                        <div class="stat-value">0</div>
+                    </div>
+                    <div class="stat-item average-score">
+                        <div class="stat-description">Average Score:</div>
+                        <div class="stat-value">0</div>
+                    </div>
+                    <div class="stat-item current-streak">
+                        <div class="stat-description">Current Streak:</div>
+                        <div class="stat-value">0</div>
+                    </div>
+                    <div class="stat-item max-streak">
+                        <div class="stat-description">Max Streak:</div>
+                        <div class="stat-value">0</div>
+                    </div>
+                </div>
+                <button id="clear-stats-button" onclick="clearStatsCookies()">Reset Stats</button>
+            </div>
+        </div>
+
+        <!-- Help Modal -->
+        <div class="modal" id="instructionsModal">
+            <div class="modal-content">
+                <div class="modal-scrollable">
+                <h2>How To Play</h2>
+                <h3>Objective</h3>
+                <p>The goal of the game is to select Pokémon strategically in a 3x3 grid based on specific characteristics. Build your grid to maximize your score!</p>
+
+                <h3>Instructions</h3>
+                <ol>
+                    <li>
+                        <h4>Grid Setup:</h4>
+                        <ul>
+                            <li>The game board consists of a 3x3 grid.</li>
+                            <li>Each row and column has a specific characteristic (e.g., Pokémon type, generation, evolution stage).</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <h4>Selecting Pokémon:</h4>
+                        <ul>
+                            <li>Click on an empty grid cell to open the Pokémon search.</li>
+                            <li>Search and select a Pokémon that fits the given row and column characteristics.</li>
+                            <li>Pokémon can only be selected once in the entire grid.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <h4>Scoring:</h4>
+                        <ul>
+                            <li>Your score is based on the percentage of players who selected the same Pokémon in that specific grid.</li>
+                            <li>The lower the score the better!</li>
+                            <li>Try to select Pokémon that are unique and not commonly chosen.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <h4>Completing the Grid:</h4>
+                        <ul>
+                            <li>Fill all 9 cells in the grid with unique Pokémon to complete the round.</li>
+                            <li>Once the grid is complete, your score will be submitted.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <h4>Post-Game Statistics:</h4>
+                        <ul>
+                            <li>After completing the grid, view post-game statistics, including the most submitted Pokémon.</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <h3>Tips</h3>
+                <ul>
+                    <li>
+                        <h4>Strategic Selection:</h4>
+                        <ul>
+                            <li>Consider the characteristics of each row and column to maximize your score.</li>
+                            <li>Be mindful of Pokémon popularity to avoid common selections.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <h4>Quick Searches:</h4>
+                        <ul>
+                            <li>Utilize the search feature in the Pokémon selection modal to quickly find and select Pokémon.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <h4>Post-Game Insights:</h4>
+                        <ul>
+                            <li>Check the post-game statistics to see which Pokémon were most submitted by players.</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <p>Enjoy the Game! If you have any questions or encounter issues, feel free to <a href="#">contact us</a>.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Hint Modal -->
+        <div id="hintModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeHintModal()">&times;</span>
+                <h2>Choose a Pokemon</h2>
+                <div id="smallerGridContainer">
+                    <div class="hint-grid grid0" onclick="selectHint(0)"></div>
+                    <div class="hint-grid grid1" onclick="selectHint(1)"></div>
+                    <div class="hint-grid grid2" onclick="selectHint(2)"></div>
+                    <div class="hint-grid grid3" onclick="selectHint(3)"></div>
+                    <div class="hint-grid grid4" onclick="selectHint(4)"></div>
+                    <div class="hint-grid grid5" onclick="selectHint(5)"></div>
+                </div>
             </div>
         </div>
 
@@ -127,19 +280,87 @@
                 </div>
             </div>
             <button id="clear-grid-button" onclick="clearGrid()">Clear Grid</button>
-            <button id="open-postGameModal" onclick="openPostGameModal()">Show Statistics</button>
+            <button id="open-postGameModal" onclick="fetchPostGameStatistics()">Give Up</button>
+            <p id="hint-mode-text">Hint Mode</p>
+            <label class="switch">
+                <input type="checkbox" id="hintModeSwitch">
+                <span class="slider round"></span>
+              </label>
         </div>
-       
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6657441205418784"
+                crossorigin="anonymous"></script>
+        <!-- Bottom -->
+        <ins class="adsbygoogle"
+                style="display:block"
+                data-ad-client="ca-pub-6657441205418784"
+                data-ad-slot="6462505951"
+                data-ad-format="auto"
+                data-full-width-responsive="true"></ins>
+        <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+   </script>
     </main>
 
     <footer>
+        <p>
+            PokeGrids is an independent project. Pokémon images and names are copyright of
+            <a href="https://www.nintendo.com/" target="_blank" rel="noopener noreferrer">Nintendo</a>,
+            <a href="https://www.gamefreak.co.jp/" target="_blank" rel="noopener noreferrer">GameFreak</a>, and
+            <a href="https://www.pokemon.com/" target="_blank" rel="noopener noreferrer">Pokémon</a>.
+        </p>
+        <a href="{% url 'privacy-policy' %}">Privacy Policy</a>
     </footer>
+    
 
     <script>
         
         var selectedPokemon = [];
         var totalScore = 0;
+        var hintMode = false;
         const date = getFormattedDate();
+        var stats = fetchUserStatsFromCookies();
+        var completedToday = getGridCompletionStatus(date);
+        var completedYesterday = checkYesterdayCompletion();
+        
+
+        window.onload = function () {
+            clearYesterdayCookies();
+            loadPokemon();
+            if (!completedYesterday && !completedToday) {
+                stats.current_streak = 0;
+            }
+            var mySwitch = document.getElementById('hintModeSwitch');
+
+            // Set the checked property to false (unchecked)
+            if (mySwitch) {
+                mySwitch.checked = false;
+            } else {
+                console.error('Switch element not found.');
+            }
+            darkModeSwitch = document.getElementById('darkModeSwitch')
+            const isDarkModeOn = darkModeSwitch.checked;
+            if (isDarkModeOn) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+            updateStatsUI(stats);
+        }
+
+        function clearYesterdayCookies() {
+            yesterday = getYesterdayFormattedDate();
+            for (var i = 0; i < 9; i++){
+                pokemonData = getYesterdayHintFromCookies(yesterday, i, 0);
+                if (Array.isArray(pokemonData) && pokemonData.length === 0) {
+                    continue;
+                } else {
+                for (var j = 0; j < 6; j++){
+                    cookieName = getYesterdayHintCookieName(yesterday, i, j);
+                    deleteCookie(cookieName);
+                    }
+                }
+            }   
+        }
 
         // Define a debounce function
         function debounce(func, delay) {
@@ -149,6 +370,21 @@
                 timeoutId = setTimeout(func, delay);
             };
         }
+
+        // Event listener to toggle on hint mode.
+        document.getElementById('hintModeSwitch').addEventListener('change', function() {
+            hintMode = this.checked;  // Toggle hint mode
+        });
+
+ // Event listener to toggle dark mode.
+        document.getElementById('darkModeSwitch').addEventListener('change', function() {
+            const isDarkModeOn = this.checked;
+            if (isDarkModeOn) {
+                document.body.classList.add('dark-mode'); // Apply dark mode class
+            } else {
+                document.body.classList.remove('dark-mode'); // Remove dark mode class
+            }
+        });
 
         // Function to open the search modal
         function handleClick(gridItem) {
@@ -161,16 +397,20 @@
             // Add the 'selected' class to the current grid item
             gridItem.classList.add('selected');
 
-            // Show the search modal
-            document.getElementById('search-modal').style.display = 'block';
+            if (hintMode){
+                openHintModal();
+            } else {
+                // Show the search modal
+                document.getElementById('search-modal').style.display = 'block';
 
-            // Select the input and reset its value
-            var input = document.querySelector('#search-modal input');
-            input.select();
-            input.value = '';
+                // Select the input and reset its value
+                var input = document.querySelector('#search-modal input');
+                input.select();
+                input.value = '';
 
-            // Add debounced event listener for input changes
-            input.addEventListener('input', debounce(fetchPokemonNames, 300));
+                // Add debounced event listener for input changes
+                input.addEventListener('input', debounce(fetchPokemonNames, 300));
+            }
         }
 
         // Function to close the search modal
@@ -189,6 +429,26 @@
             // Hide the modal
             modal.style.display = 'none';
         }
+
+        // Handle clicks outside the modal to close it
+        window.onclick = function(event) {
+            var modal = document.getElementById('search-modal');
+            if (event.target == modal) {
+                closeSearchModal();
+            }
+            var modal = document.getElementById('instructionsModal');
+            if (event.target == modal) {
+                closeHelpModal();
+            }
+            var modal = document.getElementById('personalStatsModal');
+            if (event.target == modal) {
+                closePersonalStatsModal();
+            }
+            var modal = document.getElementById('hintModal');
+            if (event.target == modal) {
+                closeHintModal();
+            }
+        };
 
         // Function to fetch Pokemon names and populate the dropdown
         function fetchPokemonNames() {
@@ -272,17 +532,7 @@
                 callback(false);
             };
             img.src = `{% static 'img/pokemon/main-sprites/' %}${pokedexNumber}.png`;
-        }
-
-    
-        // Handle clicks outside the modal to close it
-        window.onclick = function(event) {
-            var modal = document.getElementById('search-modal');
-            if (event.target == modal) {
-                closeSearchModal();
-                closePostGameModal();
-            }
-        };
+        }    
 
         // Check trait of pokemon to selected trait
         function checkTrait(pokemon, trait, traitText, selector) {
@@ -308,17 +558,11 @@
                     return false;
             }
         }
-        function handleSelect(pokemon) {
+
+        function getTraits(pokemon, selectedGridItem) {
             var selectedGridItem = document.querySelector('.grid-item.selected');
             
             if (selectedGridItem) {
-
-                // Check if a Pokemon is already selected for this grid
-                if (selectedPokemon.includes(pokemon.name)) {
-                    alert("Pokemon already selected for this grid!");
-                    return;
-                }
-
                 // Get the row and col classes from the selectedGridItem
                 var rowClass = [...selectedGridItem.classList].find(className => className.startsWith('row'));
                 var colClass = [...selectedGridItem.classList].find(className => className.startsWith('col'));
@@ -330,10 +574,6 @@
                 var rowTraitText = rowTrait.textContent
                 var colTraitText = colTrait.textContent
 
-                 // Get the row and col values without the prefixes
-                var rowValue = parseInt(rowClass.replace("row", ""), 10);
-                var colValue = parseInt(colClass.replace("col", ""), 10);
-
                 // Check the class selectors of rowTrait and colTrait
                 var rowSelector = [...rowTrait.classList].find(className => className.startsWith('selector'));
                 var colSelector = [...colTrait.classList].find(className => className.startsWith('selector'));
@@ -341,16 +581,53 @@
                 var rowCheck = checkTrait(pokemon, rowTrait, rowTraitText, rowSelector);
                 var colCheck = checkTrait(pokemon, colTrait, colTraitText, colSelector);
 
-                if (rowCheck && colCheck) {
+                return rowCheck && colCheck;
+            }
+        }
+
+        function handleSelect(pokemon) {
+            
+                if (selectedPokemon.includes(pokemon.name)) {
+                    alert("Pokemon already selected for this grid!");
+                    return;
+                }
+                
+                checkAndAddToGrid(pokemon);
+            
+            closeSearchModal();
+        }
+
+        function getRowAndColValue(){
+            var selectedGridItem = document.querySelector('.grid-item.selected');
+            // Get the row and col classes from the selectedGridItem
+            var rowClass = [...selectedGridItem.classList].find(className => className.startsWith('row'));
+            var colClass = [...selectedGridItem.classList].find(className => className.startsWith('col'));
+            // Get the row and col values without the prefixes
+            var rowValue = parseInt(rowClass.replace("row", ""), 10);
+            var colValue = parseInt(colClass.replace("col", ""), 10);
+
+            return [rowValue, colValue];
+        }
+
+        function checkAndAddToGrid(pokemon) {
+            var selectedGridItem = document.querySelector('.grid-item.selected');
+            if (selectedGridItem) {
+                isValid = getTraits(pokemon, selectedGridItem);
+                if (isValid) {
+                    // Add the Pokemon to the selected grid
                     if (selectedGridItem.textContent) {
-                        // Remove the corresponding Pokémon name from the selectedPokemon array
-                        var previousPokemonName = selectedGridItem.querySelector('.pokemon-name').textContent;
-                        removePokemonName(selectedGridItem, previousPokemonName);
+                            // Remove the corresponding Pokémon name from the selectedPokemon array
+                            var previousPokemonName = selectedGridItem.querySelector('.pokemon-name').textContent;
+                            removePokemonName(selectedGridItem, previousPokemonName);
+                            var previousPercentage = selectedGridItem.querySelector('.percentage').textContent;
+                            previousPercentage = parseFloat(previousPercentage.replace('%', ''));
+                            updateScore(-previousPercentage);
                     }
                     // Update the selected Pokemon and prevent it from being selected again
                     selectedPokemon.push(pokemon.name);
 
                     // Calculate the percentage for the selected Pokemon in this grid
+                    var [rowValue, colValue] = getRowAndColValue();
                     var gridIndex = getGridIndex(rowValue, colValue)
                     getTotalSubmissionsInGrid()
                     .then(totalSubmissions => {
@@ -359,36 +636,18 @@
 
                                 var percentage = (selectedPokemonCount / totalSubmissions) * 100;
 
-                                updateScore(percentage);
-
-                                // Update the grid item with the Pokemon name and percentage
-                                var percentageElement = document.createElement('div');
-                                percentageElement.className = 'percentage';
-                                percentageElement.textContent = `${percentage.toFixed(2)}%`;
-
-                                var pokemonImageElement = document.createElement('img');
-                                pokemonImageElement.className = 'pokemon-image'; 
-                                doesImageExist(pokemon.pokedex_number, function (exists) {
-                                    // Update the image source based on whether it exists or not
-                                    pokemonImageElement.src = exists
-                                        ? `{% static 'img/pokemon/main-sprites/' %}${pokemon.pokedex_number}.png`
-                                        : `{% static 'img/pokemon/main-sprites/0.png' %}`;
-                                });
-
-                                var pokemonNameElement = document.createElement('div');
-                                pokemonNameElement.className = 'pokemon-name';
-                                pokemonNameElement.textContent = pokemon.name;
-
-                                // Clear existing content and append the new elements
-                                selectedGridItem.innerHTML = '';
-                                selectedGridItem.appendChild(percentageElement);
-                                selectedGridItem.appendChild(pokemonImageElement);
-                                selectedGridItem.appendChild(pokemonNameElement);
-
-                                 //Check to see if the grid is completed and send a submission if full
+                                updateGridItem(selectedGridItem, pokemon.name, pokemon.pokedex_number, percentage);
+                                closeHintModal();
+                                // Save the selected Pokemon to cookies
+                                savePokemonToCookies(gridIndex, {
+                                    pokemonName: pokemon.name,
+                                    pokedexNumber: pokemon.pokedex_number,
+                                    percentage: percentage.toFixed(2)
+                                })
+                                //Check to see if the grid is completed and send a submission if full
                                 if (selectedPokemon.length === 9) {
-                                     // Call the combined function
-                                     setTimeout(() => {
+                                    // Call the combined function
+                                    setTimeout(() => {
                                         submitScoreAndGetAverageScore()
                                             .then(() => console.log('All operations completed'))
                                             .catch(error => console.error(error));
@@ -401,9 +660,55 @@
                             console.error('Error:', error);
                             // Handle the error as needed
                     });
+                } else {
+                        alert("Pokemon does not match the traits!");
                 }
+                
             }
-            closeSearchModal();
+        }
+
+        function updateGridItem(selectedGridItem, name, pokedex_number, percentage) {
+            var pokemonImageElement = document.createElement('img');
+            pokemonImageElement.className = 'pokemon-image'; 
+            doesImageExist(pokedex_number, function (exists) {
+                // Update the image source based on whether it exists or not
+                pokemonImageElement.src = exists
+                    ? `{% static 'img/pokemon/main-sprites/' %}${pokedex_number}.png`
+                    : `{% static 'img/pokemon/main-sprites/0.png' %}`;
+            });
+
+            var pokemonNameElement = document.createElement('div');
+            pokemonNameElement.className = 'pokemon-name';
+            pokemonNameElement.textContent = name;
+
+            // Clear existing content and append the new elements
+            selectedGridItem.innerHTML = '';
+            if (percentage >= 0) {
+            updateScore(percentage);
+            // Update the grid item with the Pokemon name and percentage
+            var percentageElement = document.createElement('div');
+            percentageElement.className = 'percentage';
+            percentageElement.textContent = `${percentage.toFixed(2)}%`;
+            selectedGridItem.appendChild(percentageElement);
+            }
+            selectedGridItem.appendChild(pokemonImageElement);
+            selectedGridItem.appendChild(pokemonNameElement);
+            updatePokemonNameOverflow(pokemonNameElement);   
+        }
+
+        function updatePokemonNameOverflow(pokemonNameElement) {
+            var pokemonName = pokemonNameElement.textContent;
+
+            var maxLengthWithoutAdjustment = 12;
+            if (pokemonName.length > maxLengthWithoutAdjustment) {
+                // Calculate the new font size based on the length of the name
+                var currentFontSize = parseFloat(window.getComputedStyle(pokemonNameElement).fontSize);
+                var fontSize = (currentFontSize/10) / Math.log(pokemonName.length) + 'rem';
+                pokemonNameElement.style.fontSize = fontSize;
+            } else {
+                // Reset the font size if it's within the threshold
+                pokemonNameElement.style.fontSize = ''; // Reset to default size
+            }
         }
         
         function removePokemonName(selectedGridItem, previousPokemonName) {
@@ -418,11 +723,9 @@
             return new Promise((resolve, reject) => {
                 submitScore(totalScore)
                     .then(() => {
-                        console.log('submitScore completed');
                         return getAverageScore();
                     })
                     .then(() => {
-                        console.log('getAverageScore completed');
                         resolve();
                     })
                     .catch(error => {
@@ -433,18 +736,29 @@
         }
 
         function updateScore(percentage) {
-            totalScore += percentage
-            // Update the UI to display the total score
-            var totalScoreElement = document.getElementById('total-score');
-            if (totalScoreElement) {
-                totalScoreElement.textContent = `${totalScore.toFixed(2)}`;
-            }
+            totalScore += percentage;
 
-   
+            // Check if totalScore is a number before calling toFixed
+            if (typeof totalScore === 'number' && !isNaN(totalScore)) {
+                // Update the UI to display the total score
+                var totalScoreElement = document.getElementById('total-score');
+                if (totalScoreElement) {
+                    totalScoreElement.textContent = totalScore.toFixed(2);
+                }
+            } else {
+                console.error('Invalid totalScore value:', totalScore);
+            }
         }
+
 
         function getGridIndex(row, col) {
             return (row - 1) * 3 + (col - 1)
+        }
+
+        function getRowColFromGridIndex(gridIndex) {
+            const row = Math.floor(gridIndex / 3) + 1;
+            const col = (gridIndex % 3) + 1;
+            return { row, col };
         }
 
         function getTotalSubmissionsInGrid() {
@@ -494,7 +808,6 @@
 
         // Function to handle the submission process
         function submitGrid() {
-            console.log('Inside submitGrid');
             alert("Submitting the grid!");
             closeSearchModal();
             var gridIndex = 0;
@@ -505,12 +818,13 @@
                 gridIndex++;
                 }
             }
+            if (!completedToday) {
+                updateStatsAfterSubmission();
+            }
             fetchPostGameStatistics();
-            
         }
 
         function submitScore(score) {
-            console.log('Inside submitScore');
             return new Promise((resolve, reject) => {
                 var scoreAsFloat = parseFloat(score);
                 var payload = {
@@ -632,6 +946,14 @@
             return `${utcDate.getUTCFullYear()}-${(utcDate.getUTCMonth() + 1).toString().padStart(2, '0')}-${utcDate.getUTCDate().toString().padStart(2, '0')}`;
         }
 
+        function getYesterdayFormattedDate() {
+            const currentDate = new Date();
+            const yesterdayDate = new Date(currentDate);
+            yesterdayDate.setDate(currentDate.getDate() - 1);
+
+            return `${yesterdayDate.getUTCFullYear()}-${(yesterdayDate.getUTCMonth() + 1).toString().padStart(2, '0')}-${yesterdayDate.getUTCDate().toString().padStart(2, '0')}`;
+        }
+
         function clearGrid() {
             var selectedGridItem = document.querySelector('.grid-item.selected');
             if (selectedGridItem) {
@@ -647,11 +969,12 @@
             var score = document.getElementById('total-score');
             score.innerHTML= '0.00';
             totalScore = 0;
+            deleteGridCookies();
             closeSearchModal();
+            deleteHintCookies();
         }
 
-
-        // Function to get CSRF token from cookie
+        // Cookie functions
         function getCookie(name) {
             var cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -667,30 +990,172 @@
             return cookieValue;
         }
 
-        function openPostGameModal() {
-            var postGameModal = document.getElementById('postGameModal');
-            if (postGameModal) {
-                postGameModal.style.display = 'block';
+        function setCookie(name, value, days) {
+            var expires = '';
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = '; expires=' + date.toUTCString();
+            }
+            document.cookie = name + '=' + (value || '') + expires + '; domain=pokegrids.com; path=/';
+        }
+
+        function deleteCookie(name) {
+            setCookie(name, '', -1);
+        }
+
+        function savePokemonToCookies(gridIndex, pokemonData) {
+            setCookie(getCookieName(gridIndex), JSON.stringify(pokemonData), 1);
+        }   
+        
+        function getPokemonFromCookies(gridIndex) {
+            var pokemonData = JSON.parse(getCookie(getCookieName(gridIndex)));
+            if (pokemonData) {
+                return pokemonData;
+            } else {
+                return [];
             }
         }
 
-        function closePostGameModal() {
-            var postGameModal = document.getElementById('postGameModal');
-            if (postGameModal) {
-                postGameModal.style.display = 'none';
+        function getCookieName(gridIndex) {
+            return 'grid' + gridIndex + '-pokemon' + date;
+        }
+
+        function deleteGridCookies() {
+            for (var i = 0; i < 9; i++){
+                deleteCookie(getCookieName(i));
             }
+        }
+
+        function deleteHintCookies() {
+            for (var i = 0; i < 9; i++){
+                for (var j = 0; j < 6; j++){
+                    deleteCookie(getHintCookieName(i, j));
+                }
+            }
+        }
+
+        function loadPokemon() {
+            for (var i = 0; i < 9; i++) {
+                var pokemonData = getPokemonFromCookies(i);
+
+                if (Array.isArray(pokemonData) && pokemonData.length === 0) {
+                    continue;
+                }
+                var { row, col } = getRowColFromGridIndex(i);
+                var selectedGridItem = document.querySelector(`.grid-item.row${row}.col${col}`);
+                if (selectedGridItem) {
+                    updateGridItem(selectedGridItem, pokemonData.pokemonName, pokemonData.pokedexNumber, parseFloat(pokemonData.percentage));
+                }
+            }
+        }
+
+        function updateStatsUI(stats) {
+            document.querySelector('#personalStatsModal .grid-solved .stat-value').textContent = stats.games_won;
+            document.querySelector('#personalStatsModal .average-score .stat-value').textContent = stats.average_score.toFixed(2);
+            document.querySelector('#personalStatsModal .current-streak .stat-value').textContent = stats.current_streak;
+            document.querySelector('#personalStatsModal .max-streak .stat-value').textContent = stats.max_streak;
+        }
+
+        function fetchUserStatsFromCookies() {
+            const stats = {
+                games_won: parseInt(getCookie('games_won')) || 0,
+                average_score: parseFloat(getCookie('average_score')) || 0,
+                current_streak: parseInt(getCookie('current_streak')) || 0,
+                max_streak: parseInt(getCookie('max_streak')) || 0,
+            };
+            return stats;
+        }
+
+        function updateAndSetUserStats(stats) {
+            setCookie('games_won', stats.games_won, 365);
+            setCookie('average_score', stats.average_score, 365);
+            setCookie('current_streak', stats.current_streak, 365);
+            setCookie('max_streak', stats.max_streak, 365);
+            updateStatsUI(stats);
+        }
+
+        function updateStatsAfterSubmission() {
+            stats.games_won += 1;
+            if (stats.current_streak === 0) {
+                stats.current_streak = 1;
+            }
+            else if(completedYesterday) {
+                stats.current_streak += 1;
+            }
+            if (stats.current_streak > stats.max_streak) {
+                    stats.max_streak = stats.current_streak;
+                }
+            stats.average_score = ((stats.games_won - 1) / stats.games_won) * stats.average_score +
+            (1 / stats.games_won) * totalScore;
+            updateAndSetUserStats(stats);
+            setGridCompletionStatus(true);
+        }
+
+        function setGridCompletionStatus(isCompleted) {
+            const cookieName = 'grid-completed-' + date;
+            setCookie(cookieName, isCompleted, 2);
+        }
+
+        function getGridCompletionStatus(date){
+            const cookieName = 'grid-completed-' + date;
+            isCompleted = getCookie(cookieName);
+            if(isCompleted !== null && isCompleted === 'true'){
+                return true;
+            }
+            return false;
+        }
+
+        function checkYesterdayCompletion() {
+            yesterday = getYesterdayFormattedDate();
+            return getGridCompletionStatus(yesterday)
+        }
+
+        function saveHintToCookies(gridIndex, HintIndex, pokemonData, selected) {
+            setCookie(getHintCookieName(gridIndex, HintIndex), JSON.stringify({ name: pokemonData.name, pokedex_number: pokemonData.pokedex_number ,selected: selected}), 1);        }
+
+        function getHintFromCookies(gridIndex, HintIndex) {
+            var pokemonData = JSON.parse(getCookie(getHintCookieName(gridIndex, HintIndex)));
+            if (pokemonData) {
+                return pokemonData;
+            } else {
+                return [];
+            }
+        }
+
+        function getHintCookieName(gridIndex, HintIndex) {
+            return 'grid' + gridIndex + '-hint' + HintIndex + date;
+        }
+
+        function getYesterdayHintFromCookies(yesterday, gridIndex, HintIndex) {
+            var pokemonData = JSON.parse(getCookie(getYesterdayHintCookieName(yesterday, gridIndex, HintIndex)));
+            if (pokemonData) {
+                return pokemonData;
+            } else {
+                return [];
+            }
+        }
+
+        function getYesterdayHintCookieName(yesterday, gridIndex, HintIndex) {
+            return 'grid' + gridIndex + '-hint' + HintIndex + yesterday;
         }
 
         function fetchPostGameStatistics() {
             for (var i = 0; i < 9; i++){
-                fetchMostSubmittedPokemon(i);
+                fetchMostSubmittedPokemon(i)
             }
             openPostGameModal();
         }
 
-        function fetchMostSubmittedPokemon(grid){
-            console.log(grid);
-            console.log(date);
+        function clearStatsCookies(){
+            deleteCookie('games_won');
+            deleteCookie('average_score');
+            deleteCookie('current_streak');
+            deleteCookie('max_streak');
+            updateStatsUI(stats);
+        }
+
+        function fetchMostSubmittedPokemon(grid, hintGrid) {
             fetch(`/api/pokemon-statistic/${grid}/${date}/`)
                 .then(response => {
                     if (response.ok) {
@@ -701,7 +1166,12 @@
                 })
                 .then(data => {
                     // Update the modal content with the fetched data
+                    if (hintGrid) {
+                        updateGridItem(hintGrid, data.pokemon.name, data.pokemon.pokedex_number, -1);
+                        saveHintToCookies(grid, getHintIndex(hintGrid), data.pokemon, false);
+                    } else {
                     updatePostGameModalContent(grid, data);
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching most submitted Pokemon:', error);
@@ -741,9 +1211,10 @@
                 mostSubmittedItem.appendChild(percentageElement);
                 mostSubmittedItem.appendChild(pokemonImageElement);
                 mostSubmittedItem.appendChild(pokemonNameElement);
+                updatePokemonNameOverflow(pokemonNameElement);
             })
         }
-    }
+        }
 
         function appendPercentileToModal(percentile) {
             // Append percentile to the postGameModal
@@ -756,7 +1227,169 @@
                 postGameModal.querySelector('h2').insertAdjacentElement('afterend', percentileElement);
             }
         }
-    
+
+        function openHelpModal() {
+            var modal = document.getElementById('instructionsModal');
+            modal.style.display = 'block';
+        }
+
+        function closeHelpModal() {
+            var modal = document.getElementById('instructionsModal');
+            modal.style.display = 'none'
+        }
+
+        function openPostGameModal() {
+            var postGameModal = document.getElementById('postGameModal');
+            if (postGameModal) {
+                postGameModal.style.display = 'block';
+            }
+        }
+
+        function closePostGameModal() {
+            var postGameModal = document.getElementById('postGameModal');
+            if (postGameModal) {
+                postGameModal.style.display = 'none';
+            }
+        }
+
+        function openPersonalStatsModal() {
+            var personalStatsModal = document.getElementById('personalStatsModal');
+            if(personalStatsModal) {
+                personalStatsModal.style.display = 'block';
+            }
+        }
+
+        function closePersonalStatsModal(){
+            var personalStatsModal = document.getElementById('personalStatsModal');
+            if(personalStatsModal) {
+                personalStatsModal.style.display = 'none';
+            }
+        }
+
+        function openHintModal() {
+            var hintModal = document.getElementById('hintModal');
+            if(hintModal) {
+                hintModal.style.display = 'block';
+                populateHintGrid();
+            }
+        }
+
+        function closeHintModal() {
+            var hintModal = document.getElementById('hintModal');
+            if(hintModal) {
+                hintModal.style.display = 'none';
+            }
+        }
+
+        document.getElementById('helpNav').addEventListener('click', function(event) {
+            event.preventDefault();
+            openHelpModal();
+        });
+
+        document.getElementById('statsNav').addEventListener('click', function(event) {
+            event.preventDefault();
+            openPersonalStatsModal();
+        });
+
+        function populateHintGrid() {
+            var selectedGridItem = document.querySelector('.grid-item.selected');
+            var rowClass = [...selectedGridItem.classList].find(className => className.startsWith('row'));
+            var colClass = [...selectedGridItem.classList].find(className => className.startsWith('col'));
+            var rowValue = parseInt(rowClass.replace("row", ""), 10);
+            var colValue = parseInt(colClass.replace("col", ""), 10);
+            var gridIndex = getGridIndex(rowValue, colValue);
+            var randomSlot = Math.floor(Math.random() * 6);
+            var pokemonData= getHintFromCookies(gridIndex, randomSlot)
+            if (Array.isArray(pokemonData) && pokemonData.length === 0) {  
+                for (var i = 0; i < 6; i++) {
+                    var hintGrid = document.querySelector(`.hint-grid.grid${i}`);
+                    hintGrid.innerHTML = '';
+
+                    if (i === randomSlot) {
+                        fetchMostSubmittedPokemon(gridIndex, hintGrid);
+                    } else {
+                        var randomPokemonNumber = Math.floor(Math.random() * 1190) + 1;
+                        fetchPokemonWithRetry(gridIndex, hintGrid, randomPokemonNumber);
+                    }
+                }
+            } else {
+                loadHintPokemon(gridIndex);
+            }
+        }
+
+        function fetchPokemonWithRetry(gridIndex, hintGrid, randomPokemonNumber) {
+            fetch('/api/pokemon/' + randomPokemonNumber)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateGridItem(hintGrid, data.name, data.pokedex_number, -1);
+                    saveHintToCookies(gridIndex, getHintIndex(hintGrid), data, false);
+                })
+                .catch(error => {
+                    console.error('Error fetching Pokemon:', error);
+                    // Retry with an incremented randomPokemonNumber
+                    randomPokemonNumber = Math.floor(Math.random() * 1190) + 1;
+                    fetchPokemonWithRetry(gridIndex, hintGrid, randomPokemonNumber);
+                });
+        }
+
+        function loadHintPokemon(gridIndex) {
+            for (var i = 0; i < 6; i++) {
+                var hintGrid = document.querySelector(`.hint-grid.grid${i}`);
+                hintGrid.innerHTML = '';
+                pokemonData = getHintFromCookies(gridIndex, i);
+                updateGridItem(hintGrid, pokemonData.name, pokemonData.pokedex_number, -1);
+                if (pokemonData.selected) {
+                    pokemonImage = hintGrid.querySelector('.pokemon-image');
+                    pokemonImage.style.filter = 'grayscale(100%)';
+                    hintGrid.removeEventListener('click', selectHint);
+                }
+            }
+        }
+
+        function selectHint(hintIndex) {
+            var selectedGridItem = document.querySelector('.grid-item.selected');
+            var rowClass = [...selectedGridItem.classList].find(className => className.startsWith('row'));
+            var colClass = [...selectedGridItem.classList].find(className => className.startsWith('col'));
+            var rowValue = parseInt(rowClass.replace("row", ""), 10);
+            var colValue = parseInt(colClass.replace("col", ""), 10);
+            var gridIndex = getGridIndex(rowValue, colValue);
+            var hintGrid = document.querySelector(`.hint-grid.grid${hintIndex}`);
+            pokemonName = hintGrid.querySelector('.pokemon-name').textContent;
+            pokemonImage = hintGrid.querySelector('.pokemon-image');
+
+            pokemonImage.style.filter = 'grayscale(100%)';
+
+            hintGrid.removeEventListener('click', selectHint);
+
+
+            var params = new URLSearchParams();
+            params.set('search', pokemonName);
+            fetch('api/pokemon/?' + params)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    pokemon = data.results[0]
+                    checkAndAddToGrid(pokemon)
+                    saveHintToCookies(gridIndex, hintIndex, pokemon, true);
+                })
+                .catch(error => {
+                    console.error('Error fetching Pokemon:', error);
+                });
+        }
+
+        function getHintIndex(hintGrid) {
+            return parseInt(hintGrid.classList[1].replace("grid", ""), 10);
+        }
+
     </script>
     
 </body>

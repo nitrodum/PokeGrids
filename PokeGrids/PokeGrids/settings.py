@@ -11,11 +11,15 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Use Google Cloud Storage for storage.
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_BUCKET_NAME = 'pokegrids-bucket'
+GS_PROJECT_ID = 'pokegridswebapp'
+GS_LOCATION = 'us'  # e.g., 'us-central1'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -24,9 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-qob4cm$*o2&4qs8ke9pdawk7@y+w4t4hfjlc*+*yhu=02famip'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['www.pokegrids.com', 'pokegrids.com', '34.132.164.149']
 
 
 # Application definition
@@ -38,7 +42,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
+    'django.contrib.sites',
     'rest_framework',
+    'django_filters',
+    
     'grid',
 ]
 
@@ -76,13 +84,25 @@ WSGI_APPLICATION = 'PokeGrids.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# When connected without cloud proxy
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'pokegrids-database',
+#         'USER': 'pokegrids-instance',
+#         'PASSWORD': 's1sl$$vS7.=_icv7',
+#         'HOST': '/cloudsql/pokegridswebapp:us-central1:pokegrids-instance',
+#         'PORT': '5432', 
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'PokeGrid Test',
-        'USER': 'postgres',
-        'PASSWORD': 'Nitro!12',
-        'HOST': 'localhost',
+        'NAME': 'pokegrids-database',
+        'USER': 'pokegrids-instance',
+        'PASSWORD': 's1sl$$vS7.=_icv7',
+        'HOST': '34.132.164.149',
         'PORT': '5432', 
     }
 }
@@ -128,6 +148,8 @@ STATICFILES_DIRS = [
     "grid/static",
 ]
 
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -147,12 +169,10 @@ REST_FRAMEWORK = {
     ],
 }
 
-CELERY_BROKER_URL = 'pyamqp://guest:guest@localhost//'
-CELERY_RESULT_BACKEND = 'rpc://'
-
-CELERY_BEAT_SCHEDULE = {
-    'archive_current_grid_task': {
-        'task': 'grid.tasks.archive_current_grid_task',
-        'schedule': crontab(minute='0', hour='0'),  # Run at midnight UTC
-    },
+CLOUD_TASKS = {
+    'QUEUE_NAME': 'my-queue',
+    'LOCATION': 'us-central1',
+    'PROJECT_ID': 'your-project-id',
 }
+
+SITE_ID = 2

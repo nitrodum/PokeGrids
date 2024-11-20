@@ -11,7 +11,7 @@ class Command(BaseCommand):
             reader = csv.DictReader(file)
             for row in reader:
                 Pokemon.objects.create(
-                    pokedex_number=int(row['pokedex_number']),
+                    pokedex_number=(row['pokedex_number']),
                     name=row['name'],
                     type1=row['type_1'],
                     type2=row['type_2'],

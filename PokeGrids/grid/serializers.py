@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Pokemon, Submission, PokemonStatistic, Score
+from .models import Pokemon, Submission, PokemonStatistic, Score, ArchivedGrid
 
 class PokemonSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,3 +21,9 @@ class ScoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Score
         fields = '__all__'
+
+class ArchivedGridSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArchivedGrid
+        fields = '__all__'
+        depth = 1

@@ -1,6 +1,6 @@
 import random
 from datetime import timedelta
-from celery import Celery
+#from celery import Celery
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Q
@@ -12,12 +12,15 @@ from rest_framework.pagination import PageNumberPagination
 from .models import Grid, Pokemon, Submission, PokemonStatistic, Score, ArchivedGrid
 from .serializers import PokemonSerializer, SubmissionSerializer, PokemonStatisticSerializer, ScoreSerializer
 
-celery_app = Celery('PokeGrids')
+#celery_app = Celery('PokeGrids')
 
 # Create your views here.
 def index(request):
     grid_data = Grid.objects.all()
     return render(request, 'index.html', {"grid_data":grid_data})
+
+def privacy_policy(request):
+    return render(request, 'privacy_policy.html')
 
 class PokemonPagination(PageNumberPagination):
     page_size = 8
@@ -29,7 +32,7 @@ class PokemonViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = PokemonSerializer
     pagination_class = PokemonPagination
     search_fields = ['name']
-    ordering_fields = ['name', 'generation', 'evolution_stage', 'legendary']
+    ordering_fields = ['id','name', 'generation', 'evolution_stage', 'legendary']
     
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -79,7 +82,7 @@ class SubmissionViewSet(viewsets.ModelViewSet):
         # Return a response with the serialized submission
         return Response(serializer.data)
 
-class PokemonStatisticViewSet(viewsets.ModelViewSet):
+class PokemonStatisticViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = PokemonStatistic.objects.all()
     serializer_class = PokemonStatisticSerializer
     ordering_fields = ['']
@@ -114,21 +117,43 @@ def get_submission_count(request, date):
         return JsonResponse({'error': str(e)}, status=500)   
 
 def archive_current_grid():
-    # Move the logic for archiving the grid here
     yesterday = timezone.now() - timedelta(days=1)
     yesterday = yesterday.strftime('%Y-%m-%d')
     current_grid_data = get_current_grid_data(yesterday)
     ArchivedGrid.objects.create(date=yesterday, grid_data=current_grid_data)
     Grid.objects.all().delete()
     create_grid()
+    last_three_archived_grids = ArchivedGrid.objects.all().order_by('-date')[:3]
+    last_three_grid_data = [archived_grid.grid_data for archived_grid in last_three_archived_grids]
+    current_grid_data = get_current_grid_data(getDate())
+    isGridValid = checkGrid(current_grid_data,last_three_grid_data)
+    while (not isGridValid):
+        Grid.objects.all().delete()
+        create_grid()
+        current_grid_data = get_current_grid_data(getDate())
+        isGridValid = checkGrid(current_grid_data,last_three_grid_data)
 
-    # Respond with a success message or redirect as needed
-    return HttpResponse("Archiving the current grid. This may take some time.")
+    return HttpResponse("Archiving the current grid. This may take some time.", current_grid_data)
+
+def checkGrid(current_grid_data,last_three_grid_data):
+    for i in range (0,6):
+        current_grid_item = current_grid_data[i] 
+        for last_three_grid_item in last_three_grid_data:
+            if current_grid_item in last_three_grid_item[:3]:
+                if i < 3:
+                    for j in range(3,6):
+                        if current_grid_data[j] in last_three_grid_item[3:6]:
+                            return False
+                else:
+                    for j in range(0,3):
+                        if current_grid_data[j] in last_three_grid_item[3:6]:
+                            return False
+    return True
+
 
 def get_current_grid_data(date):
     current_grid_data = []
 
-    # Retrieve the grid data based on your existing models (modify this part accordingly)
     grid_items = Grid.objects.filter(date=date)
 
     for grid_item in grid_items:
@@ -148,8 +173,8 @@ def test_grid(request):
     return HttpResponse(timezone.now())
 def create_grid():
     selectors = [1,2,3,4]
-    rowSelectorWeights = [16,1,0,1]
-    colSelectorWeights = [16,1,0,1]
+    rowSelectorWeights = [16,1,1,1]
+    colSelectorWeights = [16,1,1,1]
     types = ['normal', 'fire', 'water', 'grass', 'electric', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy', 'Mono', 'Dual']
     random.shuffle(types)
     usedRowTypes = []
@@ -195,6 +220,7 @@ def create_grid():
                 )
                 rowSelectorWeights[0] = 0
                 colSelectorWeights[2] = 0
+                colSelectorWeights[3] = 0
             else:
                 Grid.objects.create(
                     selected = selector,
@@ -203,6 +229,7 @@ def create_grid():
                 )
                 rowSelectorWeights[0] = 0
                 rowSelectorWeights[3] = 0
+                colSelectorWeights[2] = 0
                 colSelectorWeights[3] = 0
         else:
             selector = random.choices(selectors, weights=colSelectorWeights, k=1)[0]
@@ -275,10 +302,10 @@ def getDate():
     date = timezone.now().strftime('%Y-%m-%d')
     return date
 
-def schedule_next_task():
-    from .tasks import archive_current_grid_task
-    from celery.utils.log import get_task_logger
-    logger = get_task_logger(__name__)
-    logger.info("Scheduling the next task.")
-    result = archive_current_grid_task.apply_async(countdown=24 * 60 * 60)
-    logger.info(f"Next task scheduled. Result ID: {result.id}")
+# def schedule_next_task():
+#     from .tasks import archive_current_grid_task
+#     from celery.utils.log import get_task_logger
+#     logger = get_task_logger(__name__)
+#     logger.info("Scheduling the next task.")
+#     result = archive_current_grid_task.apply_async(countdown=24 * 60 * 60)
+#     logger.info(f"Next task scheduled. Result ID: {result.id}")
