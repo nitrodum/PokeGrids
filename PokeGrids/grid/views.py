@@ -90,7 +90,10 @@ class PokemonStatisticViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=['get'])
     def get_statistic_count(self, request, grid, pokemon_name, date):
         try:
-            count = PokemonStatistic.objects.filter(grid=grid, pokemon__name=pokemon_name, date=date).first().submission_count
+            statistic = PokemonStatistic.objects.filter(grid=grid, pokemon__name=pokemon_name, date=date).first()
+            if statistic is None:
+                count = 0
+            else: count = statistic.submission_count
             return Response({'count': count})
         except Exception as e:
             return Response({'error': str(e)}, status=500)
